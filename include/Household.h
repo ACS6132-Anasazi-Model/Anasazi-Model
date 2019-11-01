@@ -17,24 +17,24 @@ private:
 
 	
 public:
-	Agent(repast::AgentId id, int HouseholdType, double threshold); //for init
-	~Agent();
+	Household(repast::AgentId id, int HouseholdType, double threshold); //for init
+	~Household();
 	
 	/* Required Getters */
 	virtual repast::AgentId& getId() { return HouseholdId; }
 	virtual const repast::AgentId& getId() const { return HouseholdId; }
 	
 	/* Getters specific to this kind of Agent */
-	int getType() { return HouseholdType; }
-    int getMaizeStorge;{ return MaizeStorge; }
-	bool getMaizeStatus() { return MaizeSatisfied; }
-    bool getFissionStatus() { return HouseholdFission; }
-    bool getFertilityStatus() { return Fertility; }
+	int getType() 
+    int getMaizeStorge()
+	bool getMaizeStatus() 
+    bool getFissionStatus() 
+    bool getFertilityStatus() 
 	
 	/* Actions */
-	void updateStatus(repast::SharedContext<Agent>* context,
-			  repast::SharedDiscreteSpace<Agent, repast::StrictBorders, repast::SimpleAdder<Agent> >* space);
-	void move(repast::SharedDiscreteSpace<Agent, repast::StrictBorders, repast::SimpleAdder<Agent> >* space);	
+	void updateStatus(repast::SharedContext<Household>* context,
+			  repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space);
+	void move(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space);	
 };
 
 #endif
