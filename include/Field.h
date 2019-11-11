@@ -8,10 +8,8 @@ private:
 
 	repast::AgentId fieldID;
 	repast::AgentId householdID;
-	int pstHarvest;
-	int expHarvest;
-	void calYield();
-	void assignField();
+	int presentHarvest;
+	int expectedHarvest;
 
 public:
 
@@ -20,7 +18,7 @@ public:
 
 	void getID();
 	void getType();
-	int getExpYield();
+	int getExpectedYield();
 	void calculateYield();
 	Field* assignField();
 
