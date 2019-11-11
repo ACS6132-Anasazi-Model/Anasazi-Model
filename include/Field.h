@@ -20,6 +20,9 @@ public:
 
 	void getID();
 	void getType();
+	int getExpYield();
+	void calculateYield();
+	Field* assignField();
 
 }
 
