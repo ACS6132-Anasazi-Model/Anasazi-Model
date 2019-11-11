@@ -7,14 +7,11 @@ private:
 	int state;
 	char locationType;
 	char zone;
+	bool isWater;
 
 public:
 
 	Location(); //for initialisaiton
 	~Location(); //Deconstructor
-
-	void getState();
-	void getType();
-	void getZone();
 
 }
