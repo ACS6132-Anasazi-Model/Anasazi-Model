@@ -4,12 +4,13 @@ include ./env
 create_folders:
 	mkdir -p objects
 	mkdir -p bin
+	mkdir -p tests
 
 .PHONY: clean_compiled_files
 clean_compiled_files:
 	rm -f ./objects/*.o
 	rm -f ./bin/*.exe
-	
+
 .PHONY: clean
 clean:
 	rm -rf objects

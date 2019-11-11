@@ -1,40 +1,43 @@
 #include "repast_hpc/AgentId.h"
 #include "repast_hpc/SharedContext.h"
 #include "repast_hpc/SharedDiscreteSpace.h"
+#include "repast/random.h"
 
 
 class Household{
-	
-private:
-	repast::AgentId HouseholdId;
-	int HouseholdType;
-    int MaizeStorge;
-	bool MaizeSatisfied;
-    bool HouseholdFission;
-    bool Fertility;
-	double threshold;
-    
 
-	
+private:
+	repast::AgentId householdId;
+	struct parameters* param;
+	int householdType;
+	Field* assignedField;
+	repast::IntUniformGenerator* fissionGen;
+  int maizeStorge;
+	bool maizeSatisfied;
+  bool householdFission;
+	int age;
+	int deathAge;
+
+
+
 public:
-	Household(repast::AgentId id, int HouseholdType, double threshold); //for init
+	Household(repast::AgentId id, repast::IntUniformGenerator* generator); //for init
 	~Household();
-	
+
 	/* Required Getters */
-	virtual repast::AgentId& getId() { return HouseholdId; }
-	virtual const repast::AgentId& getId() const { return HouseholdId; }
-	
+	virtual repast::AgentId& getId() { return householdId; }
+	virtual const repast::AgentId& getId() const { return householdId; }
+
 	/* Getters specific to this kind of Agent */
-	int getType() 
-    int getMaizeStorge()
-	bool getMaizeStatus() 
-    bool getFissionStatus() 
-    bool getFertilityStatus() 
-	
+	int getType()
+  int checkMaize()
+	int chooseField()
+  bool death()
+  bool fission()
+	void nextYear()
+
 	/* Actions */
-	void updateStatus(repast::SharedContext<Household>* context,
-			  repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space);
-	void move(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space);	
+	void move(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space);
 };
 
 #endif
