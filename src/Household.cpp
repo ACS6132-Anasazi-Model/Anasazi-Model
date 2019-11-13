@@ -3,18 +3,17 @@
 #include "repast_hpc/SharedContext.h"
 #include "repast_hpc/SharedDiscreteSpace.h"
 #include <stdio.h>
-#include "repast/Random.h"
+#include "repast_hpc/Random.h"
 
 
-Household::Household(repast::AgentId id, int deathAge) //for init
+Household::Household(repast::AgentId id, int deAge) //for init
 {
   householdId = id;
-  householdType = 1
   age = 0;
-  deathAge = deathAge;
+  deathAge = deAge;
 }
 
-~Household::Household()
+Household::~Household()
 {
 
 }
@@ -47,7 +46,7 @@ bool Household::death()
 
 bool Household::fission(int fissionAge, int gen)
 {
-  if(age>fissionAge && gen == 0))
+  if(age>fissionAge && gen == 0)
   {
       return true;
   }
@@ -57,16 +56,18 @@ bool Household::fission(int fissionAge, int gen)
   }
 }
 
-void nextYear()
+void Household::nextYear()
 {
   age++;
 }
 
-repast::Point Household::chooseField()
+repast::Point<int> Household::chooseField()
 {
-  return repast::Point(0, 0)
+  return repast::Point<int> (0, 0);
 }
 
 /* Actions */
-void move(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space);
-};
+void move(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space)
+{
+
+}

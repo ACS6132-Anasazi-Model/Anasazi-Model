@@ -1,24 +1,23 @@
+#ifndef FIELD
+#define FIELD
+
 #include <repast_hpc/AgentId.h>
-#include <SharedSpaces.h>
-#inlcude "Location.h"
+#include <repast_hpc/SharedDiscreteSpace.h>
+#include "Location.h"
 
-class Field::Location {
-
+class Field: public Location {
 private:
-
 	repast::AgentId* householdID;
 	int presentHarvest;
 	int expectedHarvest;
 
 public:
-
-	Field(repast::AgentId fieldID, repast::AgentId* householdID, int presentHarvest, int expectedHarvest); //for initialisaiton
+	Field(repast::AgentId fID, repast::AgentId* houseID, int pstHarvest, int expHarvest); //for initialisaiton
 	~Field(); //Deconstructor
 
 	int getExpectedYield();
 	void calculateYield();
 	Field* assignField();
-
-}
+};
 
 #endif

@@ -7,11 +7,13 @@
 #include "repast_hpc/SharedContext.h"
 #include "repast_hpc/SharedDiscreteSpace.h"
 #include "repast_hpc/GridComponents.h"
+#include "repast_hpc/Random.h"
 
 #include "Household.h"
 
 class AnasaziModel{
 private:
+  int year;
   int stopAt;
 	int boardSizeX, boardSizeY, procX, procY, bufferSize;
   int randomSeed;
@@ -32,15 +34,15 @@ private:
     double spatialVariance;
     double fertilityProbability;
     double harvestAdjustment;
-  }
+  } param;
 
 	repast::Properties* props;
-	repast::SharedContext<Agent> context;
+	repast::SharedContext<Household> context;
   //Need to confirm this line
-	repast::SharedDiscreteSpace<Agent, repast::StrictBorders, repast::SimpleAdder<Agent> >* discreteSpace;
+	repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* discreteSpace;
 
-  repast::DoubleUniformGenerator fissionGen;
-  repast::TriangleGenerator deathAgeGen;
+  //repast::DoubleUniformGenerator fissionGen;
+  //repast::TriangleGenerator deathAgeGen;
 
 public:
 	AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm);

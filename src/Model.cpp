@@ -9,14 +9,18 @@
 #include "repast_hpc/SVDataSetBuilder.h"
 #include "repast_hpc/Point.h"
 #include "repast_hpc/Random.h"
+#include "repast_hpc/Schedule.h"
+#include "repast_hpc/SharedContext.h"
+#include "repast_hpc/SharedDiscreteSpace.h"
+#include "repast_hpc/GridComponents.h"
 #include <string>
 #include <fstream>
+#include <stdlib.h>
 
 #include "Model.h"
 
 AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm){
 	props = new repast::Properties(propsFile, argc, argv, comm);
-	stopAt = repast::strToInt(props->getProperty("stop.at"));
 	boardSizeX = repast::strToInt(props->getProperty("board.size.x"));
 	boardSizeY = repast::strToInt(props->getProperty("board.size.y"));
 
@@ -32,11 +36,10 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	std::vector<int> processDims;
 	processDims.push_back(procX);
 	processDims.push_back(procY);
-	discreteSpace = new repast::SharedDiscreteSpace<Agent, repast::StrictBorders, repast::SimpleAdder<Agent> >("AgentDiscreteSpace",gd,processDims,bufferSize, comm);
+	discreteSpace = new repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >("AgentDiscreteSpace",gd,processDims,bufferSize, comm);
 
 	context.addProjection(discreteSpace);
 
-	Parameters param;
 	//Add parameter file reading into struct here.
 	param.startYear = repast::strToInt(props->getProperty("start.year"));
 	param.endYear = repast::strToInt(props->getProperty("end.year"));
@@ -54,8 +57,11 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	param.fertilityProbability = repast::strToDouble(props->getProperty("fertility.prop"));
 	param.harvestAdjustment = repast::strToDouble(props->getProperty("harvest.adj"));
 
-	fissionGen = repast::Random::instance()->createUniDoubleGenerator(0,1);
-	deathAgeGen = repast::Random::instance()->createTriangleGenerator(0,param.mostLikelyDeathAge,param.maxAge);
+
+	year = param.startYear;
+	stopAt = param.endYear - param.startYear + 1;
+	//fissionGen = repast::Random::instance()->createUniDoubleGenerator(0.0,1.0);
+	//deathAgeGen = repast::Random::instance()->createTriangleGenerator(0.0,double(param.mostLikelyDeathAge),double(param.maxAge));
 }
 
 AnasaziModel::~AnasaziModel(){
@@ -63,30 +69,46 @@ AnasaziModel::~AnasaziModel(){
 }
 
 void AnasaziModel::initAgents(){
-
+	std::cout << "Initializing Model\n";
 }
 
 void AnasaziModel::doPerTick(){
-
+	std::cout << "Year " << year << "\n";
+	++year;
 }
 
 void AnasaziModel::initSchedule(repast::ScheduleRunner& runner){
-	runner.scheduleEvent(1, 1, repast::Schedule::FunctorPtr(new repast::MethodFunctor<SchellingModel> (this, &SchellingModel::doPerTick)));
+	runner.scheduleEvent(1, 1, repast::Schedule::FunctorPtr(new repast::MethodFunctor<AnasaziModel> (this, &AnasaziModel::doPerTick)));
 	runner.scheduleStop(stopAt);
 }
 
-bool AnasaziModel::fissionHousehold();
-bool AnasaziModel::removeHousehold();
-int AnasaziModel::countHousehold();
+bool AnasaziModel::fissionHousehold(){};
+bool AnasaziModel::removeHousehold(){};
+int AnasaziModel::countHousehold(){};
 
 void AnasaziModel::readcsv1()
 {
-	int x[], y[];
-	string zone[], maizeZone[];
-	char temp[];
-	int i = 0;
+	int *x,*y;
+	string *zone, *maizeZone;
+	string temp;
+	int i = 0, NoOfLine = 0;
+
 	std::ifstream file ("map.csv");//define file object and open map.csv
-	file.ignore(500,'\n')//Ignore first line
+	file.ignore(500,'\n');//Ignore first line
+	while(!file.eof())
+	{
+		getline(file,temp);
+		++NoOfLine;
+	}
+
+	x = (int*)malloc(NoOfLine*sizeof(int));
+	y = (int*)malloc(NoOfLine*sizeof(int));
+
+	zone = (string*)malloc(NoOfLine*sizeof(std::string));
+	maizeZone = (string*)malloc(NoOfLine*sizeof(std::string));
+
+	file.clear();  // Go back to start
+	file.seekg( 0 );
 	while(!file.eof())//read until end of file
 	{
 		getline(file,temp,',');
