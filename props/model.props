@@ -1,22 +1,26 @@
 #Properties file
 
-start.year=800;
-end.year=1350;
-max.store.year=2;
-personal.need=800;
-fission.age=16;
-death.age=30;
-min.age=0;
-max.age=29;
-max.distance=1600;
-min.corn=2000;
-max.corn=2400;
-annual.variance=0.10;
-spatial.variance=0.10;
-fertility=0.125;
-new.store.ratio=0.33;
+random.seed=1
+stop.at=2
+count.of.agents=1
+board.size.x = 80
+board.size.y = 120
+proc.per.x = 1
+proc.per.y = 1
+grid.buffer = 0
 
-random.seed=1;
-stop.at=2;
-count.of.agents=1;
-
+start.year=800
+end.year=1350
+max.store.year=2
+household.need=800
+fission.age=16
+max.age=30
+max.distance=1600
+initial.min.corn=2000
+initial.max.corn=2400
+annual.variance=0.10
+spatial.variance=0.10
+fertility.prop=0.125
+harvest.adj=1
+#new.household.ini.maize=0.33
+#new.store.ratio=0.33

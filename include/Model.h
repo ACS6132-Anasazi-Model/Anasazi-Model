@@ -13,13 +13,34 @@
 class AnasaziModel{
 private:
   int stopAt;
-	int boardSize;
+	int boardSizeX, boardSizeY, procX, procY, bufferSize;
+  int randomSeed;
   std::vector<Household> listOfHousehold;
+  struct Parameters
+  {
+    int startYear;
+    int endYear;
+    int maxStorageYear;
+    int householdNeed;
+    int minFissionAge;
+    int maxAge;
+    int mostLikelyDeathAge;
+    int maxDistance;
+    int initMinCorn;
+    int initMaxCorn;
+    double annualVariance;
+    double spatialVariance;
+    double fertilityProbability;
+    double harvestAdjustment;
+  }
 
 	repast::Properties* props;
 	repast::SharedContext<Agent> context;
   //Need to confirm this line
 	repast::SharedDiscreteSpace<Agent, repast::StrictBorders, repast::SimpleAdder<Agent> >* discreteSpace;
+
+  repast::DoubleUniformGenerator fissionGen;
+  repast::TriangleGenerator deathAgeGen;
 
 public:
 	AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm);

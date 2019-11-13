@@ -15,11 +15,51 @@
 #include "Model.h"
 
 AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm){
+	props = new repast::Properties(propsFile, argc, argv, comm);
+	stopAt = repast::strToInt(props->getProperty("stop.at"));
+	boardSizeX = repast::strToInt(props->getProperty("board.size.x"));
+	boardSizeY = repast::strToInt(props->getProperty("board.size.y"));
 
+	initializeRandom(*props, comm);
+	repast::Point<double> origin(0,0);
+	repast::Point<double> extent(boardSizeX, boardSizeY);
+	repast::GridDimensions gd (origin, extent);
+
+	int procX = repast::strToInt(props->getProperty("proc.per.x"));
+	int procY = repast::strToInt(props->getProperty("proc.per.y"));
+	int bufferSize = repast::strToInt(props->getProperty("grid.buffer"));
+
+	std::vector<int> processDims;
+	processDims.push_back(procX);
+	processDims.push_back(procY);
+	discreteSpace = new repast::SharedDiscreteSpace<Agent, repast::StrictBorders, repast::SimpleAdder<Agent> >("AgentDiscreteSpace",gd,processDims,bufferSize, comm);
+
+	context.addProjection(discreteSpace);
+
+	Parameters param;
+	//Add parameter file reading into struct here.
+	param.startYear = repast::strToInt(props->getProperty("start.year"));
+	param.endYear = repast::strToInt(props->getProperty("end.year"));
+	param.maxStorageYear = repast::strToInt(props->getProperty("max.store.year"));
+	param.householdNeed = repast::strToInt(props->getProperty("household.need"));
+	param.minFissionAge = repast::strToInt(props->getProperty("fission.age"));
+	param.maxAge = repast::strToInt(props->getProperty("max.age"));
+	param.mostLikelyDeathAge = repast::strToInt(props->getProperty("most.death.age"));
+	param.maxDistance = repast::strToInt(props->getProperty("max.distance"));
+	param.initMinCorn = repast::strToInt(props->getProperty("initial.min.corn"));
+	param.initMaxCorn = repast::strToInt(props->getProperty("initial.max.corn"));
+
+	param.annualVariance = repast::strToDouble(props->getProperty("annual.variance"));
+	param.spatialVariance = repast::strToDouble(props->getProperty("spatial.variance"));
+	param.fertilityProbability = repast::strToDouble(props->getProperty("fertility.prop"));
+	param.harvestAdjustment = repast::strToDouble(props->getProperty("harvest.adj"));
+
+	fissionGen = repast::Random::instance()->createUniDoubleGenerator(0,1);
+	deathAgeGen = repast::Random::instance()->createTriangleGenerator(0,param.mostLikelyDeathAge,param.maxAge);
 }
 
 AnasaziModel::~AnasaziModel(){
-
+	delete props;
 }
 
 void AnasaziModel::initAgents(){
@@ -38,6 +78,7 @@ void AnasaziModel::initSchedule(repast::ScheduleRunner& runner){
 bool AnasaziModel::fissionHousehold();
 bool AnasaziModel::removeHousehold();
 int AnasaziModel::countHousehold();
+
 void AnasaziModel::readcsv1()
 {
 	int x[], y[];
