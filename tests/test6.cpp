@@ -1,4 +1,4 @@
-#include "Model.cpp"
+// #include "Model.cpp"
 
 void Test6::getHousehold(){
 	int houseNumber[sizeof(model.listOfHousehold),2] = {};
@@ -14,7 +14,7 @@ void Test6::getHousehold(){
 		outfile << endl;
 
 	}
-	
-	outfile.close();	
+
+	outfile.close();
 
 }
