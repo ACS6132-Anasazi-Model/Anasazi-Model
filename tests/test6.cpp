@@ -1,20 +1,25 @@
 // #include "Model.cpp"
 
-void Test6::getHousehold(){
-	int houseNumber[sizeof(model.listOfHousehold),2] = {};
-	for (int i = 0; i < sizeof(model.listOfHousehold); i++){
+#include <fstream>
+
+//REPLACE a WITH model.listOfHousehold
+int a[5] = {10,20,30,40,50};
+
+int main(){
+	int houseNumber[sizeof(a)/sizeof(a[0])][2];
+	for (int i = 0; i < sizeof(a)/sizeof(a[0]); i++){
 		houseNumber[i][0] = i;
-		houseNumber[i][1] = Model.listOfHousehold[i];
+		houseNumber[i][1] = a[i];
 	}
 
-	std:ofstream out("test6.csv");
+	std::ofstream out ("test6.csv");
 
-	for (int i = 0; i < sizeof(model.listOfHousehold); i++){
-		outfile << houseNumber[i][0] << ", " << houseNumber[i][1];
-		outfile << endl;
+	for (int i = 0; i < sizeof(a)/sizeof(a[0]); i++){
+		out << houseNumber[i][0] << ", " << houseNumber[i][1];
+		out << std::endl;
 
 	}
 
-	outfile.close();
+	out.close();
 
 }
