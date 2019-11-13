@@ -20,11 +20,6 @@ Household::Household(repast::AgentId id, int deathAge) //for init
 }
 
 /* Getters specific to this kind of Agent */
-repast::AgentId getID()
-{
-  return householdID;
-}
-
 
 int Household::checkMaize()
 {

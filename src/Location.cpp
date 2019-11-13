@@ -10,11 +10,6 @@
 Location::Location(repast::AgentId LocationID, int locationstate, char LocationType, char zone, bool iswater) {}
 Location::~Location() {}
 
-repast::AgentId getID()
-{
-	return LocationID;
-}
-
 bool Location::getWater(){
 	return isWater;
 }

@@ -9,6 +9,7 @@
 #include "repast_hpc/SVDataSetBuilder.h"
 #include "repast_hpc/Point.h"
 #include "repast_hpc/Random.h"
+#include <string>
 
 #include "Model.h"
 
@@ -36,3 +37,24 @@ void AnasaziModel::initSchedule(repast::ScheduleRunner& runner){
 bool AnasaziModel::fissionHousehold();
 bool AnasaziModel::removeHousehold();
 int AnasaziModel::countHousehold();
+void AnasaziModel::readcsv1()
+{
+	int x[], y[];
+	string zone[], maizeZone[];
+	char temp[];
+	int i = 0;
+	std::ifstream file;//define file object
+	file.open("map.csv", ios::in); //Open file map.csv
+	file.ignore(500,'\n')//Ignore first line
+	while(!file.eof())//read until end of file
+	{
+		getline(file,temp,',');
+		x[i] = repast::strToInt(temp); //Read until ',' and convert to int & store in x
+		getline(file,temp,',');
+		y[i] = repast::strToInt(temp); //Read until ',' and convert to int & store in y
+		getline(file,temp,','); //skip data
+		getline(file,zone[i],',');// read until ',' and store into zone
+		getline(file,maizeZone[i],'\n');// read until next line and store into maizeZone
+		i++;
+	}
+}

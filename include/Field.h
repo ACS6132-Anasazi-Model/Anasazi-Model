@@ -6,7 +6,7 @@ class Field::Location {
 
 private:
 
-	repast::AgentId householdID;
+	repast::AgentId* householdID;
 	int presentHarvest;
 	int expectedHarvest;
 
@@ -14,7 +14,7 @@ public:
 
 	Field(repast::AgentId fieldID); //for initialisaiton
 	~Field(); //Deconstructor
-	
+
 	int getExpectedYield();
 	void calculateYield();
 	Field* assignField();

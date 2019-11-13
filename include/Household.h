@@ -26,7 +26,6 @@ public:
 	virtual const repast::AgentId& getId() const { return householdId; }
 
 	/* Getters specific to this kind of Agent */
-	repast::AgentId getID()
   int checkMaize()
 	int chooseField()
   bool death()

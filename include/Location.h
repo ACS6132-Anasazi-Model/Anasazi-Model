@@ -14,7 +14,8 @@ public:
 	Location(); //for initialisaiton
 	~Location(); //Deconstructor
 
-	repast::AgentId getID();
+	virtual repast::AgentId& getId() { return LocationID; }
+	virtual const repast::AgentId& getId() const { return LocationID; }
 	bool getWater();
 
 }

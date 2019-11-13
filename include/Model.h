@@ -30,6 +30,7 @@ public:
   bool fissionHousehold();
   bool removeHousehold();
   int countHousehold();
+  void readcsv1();
 };
 
 #endif
