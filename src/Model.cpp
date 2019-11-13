@@ -10,6 +10,7 @@
 #include "repast_hpc/Point.h"
 #include "repast_hpc/Random.h"
 #include <string>
+#include <fstream>
 
 #include "Model.h"
 
@@ -43,8 +44,7 @@ void AnasaziModel::readcsv1()
 	string zone[], maizeZone[];
 	char temp[];
 	int i = 0;
-	std::ifstream file;//define file object
-	file.open("map.csv", ios::in); //Open file map.csv
+	std::ifstream file ("map.csv");//define file object and open map.csv
 	file.ignore(500,'\n')//Ignore first line
 	while(!file.eof())//read until end of file
 	{
