@@ -1,1 +1,22 @@
 #Properties file
+
+start.year=800;
+end.year=1350;
+max.store.year=2;
+personal.need=800;
+fission.age=16;
+death.age=30;
+min.age=0;
+max.age=29;
+max.distance=1600;
+min.corn=2000;
+max.corn=2400;
+annual.variance=0.10;
+spatial.variance=0.10;
+fertility=0.125;
+new.store.ratio=0.33;
+
+random.seed=1;
+stop.at=2;
+count.of.agents=1;
+
