@@ -4,8 +4,8 @@ class Location{
 
 private:
 
+	repast::AgentId LocationID;
 	int state;
-	char locationType;
 	char zone;
 	bool isWater;
 
@@ -13,5 +13,8 @@ public:
 
 	Location(); //for initialisaiton
 	~Location(); //Deconstructor
+
+	repast::AgentId getID();
+	bool getWater();
 
 }

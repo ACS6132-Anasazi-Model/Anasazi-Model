@@ -1,17 +1,14 @@
 #include "repast_hpc/AgentId.h"
 #include "repast_hpc/SharedContext.h"
 #include "repast_hpc/SharedDiscreteSpace.h"
-#include "repast/random.h"
+#include "repast/Random.h"
 
 
 class Household{
 
 private:
 	repast::AgentId householdId;
-	struct parameters* param;
-	int householdType;
 	Field* assignedField;
-	repast::IntUniformGenerator* fissionGen;
   int maizeStorge;
 	bool maizeSatisfied;
   bool householdFission;
@@ -21,7 +18,7 @@ private:
 
 
 public:
-	Household(repast::AgentId id, repast::IntUniformGenerator* generator); //for init
+	Household(repast::AgentId id, int deathAge); //for init
 	~Household();
 
 	/* Required Getters */
@@ -29,11 +26,11 @@ public:
 	virtual const repast::AgentId& getId() const { return householdId; }
 
 	/* Getters specific to this kind of Agent */
-	int getType()
+	repast::AgentId getID()
   int checkMaize()
 	int chooseField()
   bool death()
-  bool fission()
+  bool fission(int fissionAge, int gen)
 	void nextYear()
 
 	/* Actions */

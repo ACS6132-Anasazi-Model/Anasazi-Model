@@ -3,16 +3,15 @@
 #include "repast_hpc/SharedContext.h"
 #include "repast_hpc/SharedDiscreteSpace.h"
 #include <stdio.h>
-#include "repast/random.h"
+#include "repast/Random.h"
 
 
-Household::Household(repast::AgentId id, repast::IntUniformGenerator* generator, repast::CauchyGenerator* generator2) //for init
+Household::Household(repast::AgentId id, int deathAge) //for init
 {
   householdId = id;
   householdType = 1
   age = 0;
-  fissionGen = generator;
-  deathAge = generator2->next()
+  deathAge = deathAge;
 }
 
 ~Household::Household()
@@ -21,10 +20,11 @@ Household::Household(repast::AgentId id, repast::IntUniformGenerator* generator,
 }
 
 /* Getters specific to this kind of Agent */
-int Household::getType()
+repast::AgentId getID()
 {
-  return householdType;
+  return householdID;
 }
+
 
 int Household::checkMaize()
 {
@@ -50,9 +50,9 @@ bool Household::death()
   }
 }
 
-bool Household::fission()
+bool Household::fission(int fissionAge, int gen)
 {
-  if(age>param.fissionAge && gen->next() == 1))
+  if(age>fissionAge && gen == 0))
   {
       return true;
   }
