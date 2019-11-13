@@ -12,7 +12,7 @@ private:
 
 public:
 
-	Field(repast::AgentId fieldID); //for initialisaiton
+	Field(repast::AgentId fieldID, repast::AgentId* householdID, int presentHarvest, int expectedHarvest); //for initialisaiton
 	~Field(); //Deconstructor
 
 	int getExpectedYield();
