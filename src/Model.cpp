@@ -40,7 +40,6 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 
 	context.addProjection(discreteSpace);
 
-	//Add parameter file reading into struct here.
 	param.startYear = repast::strToInt(props->getProperty("start.year"));
 	param.endYear = repast::strToInt(props->getProperty("end.year"));
 	param.maxStorageYear = repast::strToInt(props->getProperty("max.store.year"));
@@ -118,6 +117,147 @@ void AnasaziModel::readcsv1()
 		getline(file,temp,','); //skip data
 		getline(file,zone[i],',');// read until ',' and store into zone
 		getline(file,maizeZone[i],'\n');// read until next line and store into maizeZone
+		i++;
+	}
+}
+
+void AnasaziModel::readcsv3()
+{
+	//read "id number","meters north","meters east","type","start date","end date","x","y"
+	int *idnumber, *metersnorth, *meterseast, *type, *startdate, *enddate, *x1, *y1;
+	string temp;
+	int i = 0, NoOfLine = 0;
+
+	std::ifstream file ("water.csv");//define file object and open water.csv
+	file.ignore(500,'\n');//Ignore first line
+	while(!file.eof())
+	{
+		getline(file,temp);
+		++NoOfLine;
+	}
+
+	idnumber = (int*)malloc(NoOfLine*sizeof(int));
+	metersnorth = (int*)malloc(NoOfLine*sizeof(int));
+	meterseast = (int*)malloc(NoOfLine*sizeof(int));
+	type = (int*)malloc(NoOfLine*sizeof(int));
+	startdate = (int*)malloc(NoOfLine*sizeof(int));
+	enddate = (int*)malloc(NoOfLine*sizeof(int));
+	x1 = (int*)malloc(NoOfLine*sizeof(int));
+	y1 = (int*)malloc(NoOfLine*sizeof(int));
+
+
+	file.clear();  // Go back to start
+	file.seekg( 0 );
+	while(!file.eof())//read until end of file
+	{
+		getline(file,temp,',');
+		idnumber[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		metersnorth[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		meterseast[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		type[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		startdate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		x1[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		y1[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		i++;
+	}
+}
+
+void AnasaziModel::readcsv4()
+{
+	//read "year","general","north","mid","natural","upland","kinbiko"
+	int *pdsiyear;
+	double *pdsigeneral, *pdsinorth, *pdsimid, *pdsinatural, *pdsiupland, *pdsikinbiko;
+	string temp;
+	int i = 0, NoOfLine = 0;
+
+	std::ifstream file ("pdsi.csv");//define file object and open pdsi.csv
+	file.ignore(500,'\n');//Ignore first line
+	while(!file.eof())
+	{
+		getline(file,temp);
+		++NoOfLine;
+	}
+
+	pdsiyear = (int*)malloc(NoOfLine*sizeof(int));
+	pdsigeneral = (double*)malloc(NoOfLine*sizeof(double));
+	pdsinorth = (double*)malloc(NoOfLine*sizeof(double));
+	pdsimid = (double*)malloc(NoOfLine*sizeof(double));
+	pdsinatural = (double*)malloc(NoOfLine*sizeof(double));
+	pdsiupland = (double*)malloc(NoOfLine*sizeof(double));
+	pdsikinbiko = (double*)malloc(NoOfLine*sizeof(double));
+
+	file.clear();  // Go back to start
+	file.seekg( 0 );
+	while(!file.eof())//read until end of file
+	{
+		getline(file,temp,',');
+		pdsiyear[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		pdsigeneral[i] = repast::strToDouble(temp); //Read until ',' and convert to double
+		getline(file,temp,',');
+		pdsinorth[i] = repast::strToDouble(temp); //Read until ',' and convert to double
+		getline(file,temp,',');
+		pdsimid[i] = repast::strToDouble(temp); //Read until ',' and convert to double
+		getline(file,temp,',');
+		pdsinatural[i] = repast::strToDouble(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		pdsiupland[i] = repast::strToDouble(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		pdsikinbiko[i] = repast::strToDouble(temp); //Read until ',' and convert to double
+		i++;
+	}
+}
+
+void AnasaziModel::readcsv5()
+{
+	//read "year","general","north","mid","natural","upland","kinbiko"
+	int *hydroyear;
+	double *hydrogeneral, *hydronorth, *hydromid, *hydronatural, *hydroupland, *hydrokinbiko;
+	string temp;
+	int i = 0, NoOfLine = 0;
+
+	std::ifstream file ("hydro.csv");//define file object and open hydro.csv
+	file.ignore(500,'\n');//Ignore first line
+	while(!file.eof())
+	{
+		getline(file,temp);
+		++NoOfLine;
+	}
+
+	hydroyear = (int*)malloc(NoOfLine*sizeof(int));
+	hydrogeneral = (double*)malloc(NoOfLine*sizeof(double));
+	hydronorth = (double*)malloc(NoOfLine*sizeof(double));
+	hydromid = (double*)malloc(NoOfLine*sizeof(double));
+	hydronatural = (double*)malloc(NoOfLine*sizeof(double));
+	hydroupland = (double*)malloc(NoOfLine*sizeof(double));
+	hydrokinbiko = (double*)malloc(NoOfLine*sizeof(double));
+
+	file.clear();  // Go back to start
+	file.seekg( 0 );
+	while(!file.eof())//read until end of file
+	{
+		getline(file,temp,',');
+		hydroyear[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		hydrogeneral[i] = repast::strToDouble(temp); //Read until ',' and convert to double
+		getline(file,temp,',');
+		hydronorth[i] = repast::strToDouble(temp); //Read until ',' and convert to double
+		getline(file,temp,',');
+		hydromid[i] = repast::strToDouble(temp); //Read until ',' and convert to double
+		getline(file,temp,',');
+		hydronatural[i] = repast::strToDouble(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		hydroupland[i] = repast::strToDouble(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		hydrokinbiko[i] = repast::strToDouble(temp); //Read until ',' and convert to double
 		i++;
 	}
 }

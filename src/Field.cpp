@@ -15,10 +15,11 @@ Field::~Field() {}
 
 //get expected field harvest
 int Field::getExpectedYield(){
-  return expectedHarvest;
+    return expectedHarvest;
 }
 
 //calculate harvest of the field
-void Field::calculateYield(){
+void Field::calculateYield(int y, int q, double Ha){
   //Need to add formula to calculate expected yield
+    expectedHarvest = y * q * Ha;
 }

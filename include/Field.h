@@ -16,7 +16,7 @@ public:
 	~Field(); //Deconstructor
 
 	int getExpectedYield();
-	void calculateYield();
+	void calculateYield(int y, int q, double Ha);
 	Field* assignField();
 };
 
