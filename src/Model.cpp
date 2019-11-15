@@ -86,8 +86,9 @@ void AnasaziModel::initAgents(){
 		}
 	}
 
-	readcsv1();
-	readcsv2();
+	readcsv1(locationSpace);
+	readcsv3(waterSpace);
+	readcsv2(householdSpace);
 	readcsv4();
 	readcsv5();
 	// std::vector<Location*> locationList;
@@ -271,45 +272,45 @@ void AnasaziModel::readcsv2()
 
 void AnasaziModel::readcsv3()
 {
-	//read "id number","meters north","meters east","type","start date","end date","x","y"
-	int *type, *startdate, *enddate, *x, *y;
+	//read "type","start date","end date","x","y"
+	int type, startdate, enddate, x, y;
 	string temp;
-	int i = 0, NoOfLine = 0;
+	bool iswater = 0;
+	char zone;
+	Location Location;
 
 	std::ifstream file ("data/water.csv");//define file object and open water.csv
 	file.ignore(500,'\n');//Ignore first line
-	while(!file.eof())
-	{
-		getline(file,temp);
-		++NoOfLine;
-	}
-
-	type = (int*)malloc(NoOfLine*sizeof(int));
-	startdate = (int*)malloc(NoOfLine*sizeof(int));
-	enddate = (int*)malloc(NoOfLine*sizeof(int));
-	x = (int*)malloc(NoOfLine*sizeof(int));
-	y = (int*)malloc(NoOfLine*sizeof(int));
-
-
-	file.clear();  // Go back to start
-	file.seekg( 0 );
-	while(!file.eof())//read until end of file
+	while(1)//read until end of file
 	{
 		getline(file,temp,',');
-		getline(file,temp,',');
-		getline(file,temp,',');
-		getline(file,temp,',');
-		type[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		startdate[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		x[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		y[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		i++;
+		if(!temp.empty())		{
+			getline(file,temp,',');
+			getline(file,temp,',');
+			getline(file,temp,',');
+			getline(file,temp,',');
+			type = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			startdate = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			enddate = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			x = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			y = repast::strToInt(temp); //Read until ',' and convert to int
+
+			iswater = Location.getWater(year, zone, type, startdate, enddate, x, y);  //question 1: how to use zone from locationlist?
+			std::vector<Location*> waterList;
+			if (iswater == 1){
+			locationSpace->getObjectsAt(repast::Point<int>(x, y), waterList);  //question 2: how to build a connection between coordinates and waterstate and save them in waterlist?
+			waterList[0]->setZones(x,y);
+			}
+		}			
+		else{
+			goto endloop;
+		}
 	}
+	endloop: ;
 }
 
 void AnasaziModel::readcsv4()
