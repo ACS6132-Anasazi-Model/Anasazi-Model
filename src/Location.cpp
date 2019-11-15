@@ -6,28 +6,18 @@
 #include "repast_hpc/Point.h"
 #include "repast_hpc/Random.h"
 
-Location::Location(repast::AgentId FieldID, repast::AgentId* houseID, int locationstate, char z, bool iswater,  int pstHarvest, int expHarvest){
+Location::Location(repast::AgentId FieldID){
 	LocationID = FieldID;
-	householdID = houseID;
-	state = locationstate;
-	zone = z;
-	isWater = iswater;
-	presentHarvest = pstHarvest;
-	expectedHarvest = expHarvest;
-
 }//for initialisaiton
-
-Location::Location(repast::AgentId FieldID, int locationstate, char z, bool iswater,  int pstHarvest, int expHarvest){
-	LocationID = FieldID;
-	state = locationstate;
-	zone = z;
-	isWater = iswater;
-	presentHarvest = pstHarvest;
-	expectedHarvest = expHarvest;
-}
 
 Location::Location(){}
 Location::~Location() {}
+
+void Location::setZones(int z, int mz){
+	zone = z;
+	maizeZone = mz;
+}
+
 
 bool Location::getWater(){
 	return isWater;

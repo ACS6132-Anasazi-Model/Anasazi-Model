@@ -38,8 +38,9 @@ private:
 
 	repast::Properties* props;
 	repast::SharedContext<Household> context;
-  //Need to confirm this line
-	repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* discreteSpace;
+  repast::SharedContext<Location> locationcontext;  //Need to confirm this line
+	repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* householdSpace;
+  repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace;
   repast::DoubleUniformGenerator fissionGen = repast::Random::instance()->createUniDoubleGenerator(0,1);
   repast::TriangleGenerator deathAgeGen = repast::Random::instance()->createTriangleGenerator(0,1,2);
 
@@ -52,11 +53,11 @@ public:
   bool fissionHousehold();
   bool removeHousehold();
   int countHousehold();
-  void readcsv1();
-  void readcsv2();
-  void readcsv3();
-  void readcsv4();
-  void readcsv5();
+  void readcsv1(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
+  void readcsv2(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
+  void readcsv3(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
+  void readcsv4(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
+  void readcsv5(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
 };
 
 #endif

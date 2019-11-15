@@ -19,7 +19,7 @@
 
 #include "Model.h"
 
-AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm){
+AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm), locationcontext(comm){
 	props = new repast::Properties(propsFile, argc, argv, comm);
 	boardSizeX = repast::strToInt(props->getProperty("board.size.x"));
 	boardSizeY = repast::strToInt(props->getProperty("board.size.y"));
@@ -36,9 +36,11 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	std::vector<int> processDims;
 	processDims.push_back(procX);
 	processDims.push_back(procY);
-	discreteSpace = new repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >("AgentDiscreteSpace",gd,processDims,bufferSize, comm);
+	householdSpace = new repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >("AgentDiscreteSpace",gd,processDims,bufferSize, comm);
+	locationSpace = new repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >("LocationDiscreteSpace",gd,processDims,bufferSize, comm);
 
-	context.addProjection(discreteSpace);
+	context.addProjection(householdSpace);
+	locationcontext.addProjection(locationSpace);
 
 	param.startYear = repast::strToInt(props->getProperty("start.year"));
 	param.endYear = repast::strToInt(props->getProperty("end.year"));
@@ -69,11 +71,29 @@ AnasaziModel::~AnasaziModel(){
 
 void AnasaziModel::initAgents(){
 	std::cout << "Initializing Model\n";
-	Location LocationArr[boardSizeX][boardSizeY];
+	int rank = repast::RepastProcess::instance()->rank();
+
+	int LocationID = 0;
+	for(int i=0; i<boardSizeX; i++ )
+	{
+		for(int j=0; j<boardSizeY; j++)
+		{
+			repast::AgentId id(LocationID, rank, 1);
+			Location* agent = new Location(id);
+			locationcontext.addAgent(agent);
+			locationSpace->moveTo(id, repast::Point<int>(i, j));
+			LocationID++;
+		}
+	}
+
+	readcsv1(locationSpace);
+	// std::vector<Location*> locationList;
+	// locationSpace->getObjectsAt(repast::Point<int>(50, 50), locationList);
+	// cout<< locationList[0]->getId().id() << "\n";
 }
 
 void AnasaziModel::doPerTick(){
-	std::cout << "Year " << year << "\n";
+	//std::cout << "Year " << year << "\n";
 	++year;
 }
 
@@ -86,43 +106,111 @@ bool AnasaziModel::fissionHousehold(){};
 bool AnasaziModel::removeHousehold(){};
 int AnasaziModel::countHousehold(){};
 
-void AnasaziModel::readcsv1()
+void AnasaziModel::readcsv1(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
 {
-	int *x,*y;
-	string *zone, *maizeZone;
-	string temp;
-	int i = 0, NoOfLine = 0;
+	int x,y,z , mz;
+	string zone, maizeZone, temp;
 
 	std::ifstream file ("map.csv");//define file object and open map.csv
 	file.ignore(500,'\n');//Ignore first line
-	while(!file.eof())
-	{
-		getline(file,temp);
-		++NoOfLine;
-	}
 
-	x = (int*)malloc(NoOfLine*sizeof(int));
-	y = (int*)malloc(NoOfLine*sizeof(int));
-
-	zone = (string*)malloc(NoOfLine*sizeof(std::string));
-	maizeZone = (string*)malloc(NoOfLine*sizeof(std::string));
-
-	file.clear();  // Go back to start
-	file.seekg( 0 );
-	while(!file.eof())//read until end of file
+	while(1)//read until end of file
 	{
 		getline(file,temp,',');
-		x[i] = repast::strToInt(temp); //Read until ',' and convert to int & store in x
-		getline(file,temp,',');
-		y[i] = repast::strToInt(temp); //Read until ',' and convert to int & store in y
-		getline(file,temp,','); //skip data
-		getline(file,zone[i],',');// read until ',' and store into zone
-		getline(file,maizeZone[i],'\n');// read until next line and store into maizeZone
-		i++;
+		if(!temp.empty())
+		{
+			getline(file,temp,',');
+			x = repast::strToInt(temp); //Read until ',' and convert to int & store in x
+			getline(file,temp,',');
+			y = repast::strToInt(temp); //Read until ',' and convert to int & store in y
+			getline(file,temp,','); //skip data
+			getline(file,zone,',');// read until ',' and store into zone
+			getline(file,maizeZone,'\n');// read until next line and store into maizeZone
+			std::cout << zone << std::endl;
+			if(zone == "Empty")
+			{
+				z = 0;
+			}
+			else if(zone == "Natural")
+			{
+				z = 1;
+			}
+			else if(zone == "Kinbiko")
+			{
+				z = 2;
+			}
+			else if(zone == "Uplands")
+			{
+				z = 3;
+			}
+			else if(zone == "North")
+			{
+				z = 4;
+			}
+			else if(zone == "General")
+			{
+				z = 5;
+			}
+			else if(zone == "North Dunes")
+			{
+				z = 6;
+			}
+			else if(zone == "Mid Dunes")
+			{
+				z = 7;
+			}
+			else if(zone == "Mid")
+			{
+				z = 8;
+			}
+			else
+			{
+				z = 99;
+				std::cout << zone << std::endl;
+			}
+
+			if(maizeZone == "Empty")
+			{
+				mz = 0;
+			}
+			else if(maizeZone == "No_Yield")
+			{
+				mz = 1;
+			}
+			else if(maizeZone == "Yield_1")
+			{
+				mz = 2;
+			}
+			else if(maizeZone == "Yield_2")
+			{
+				mz = 3;
+			}
+			else if(maizeZone == "Yield_3")
+			{
+				mz = 4;
+			}
+			else if(maizeZone == "Sand_dune")
+			{
+				mz = 5;
+			}
+			else
+			{
+				mz = 99;
+				std::cout << maizeZone << std::endl;
+			}
+			std::vector<Location*> locationList;
+			locationSpace->getObjectsAt(repast::Point<int>(x, y), locationList);
+			locationList[0]->setZones(z,mz);
+			//cout<< locationList[0]->getId().id() << "\n";
+		}
+		else{
+			goto endloop;
+		}
 	}
+	endloop: ;
 }
 
-void AnasaziModel::readcsv2()
+void AnasaziModel::readcsv2(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
 {
 	//read "start date","end date","median date","baseline households","x","y"
 	int *startdate, *enddate, *mediandate, *baselinehouseholds, *x, *y;
@@ -157,14 +245,14 @@ void AnasaziModel::readcsv2()
 		getline(file,temp,',');
 		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		mediandate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		mediandate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');  //skip data
 		getline(file,temp,',');
 		getline(file,temp,',');
 		getline(file,temp,',');
 		getline(file,temp,',');
 		getline(file,temp,',');
-		baselinehouseholds[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		baselinehouseholds[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
 		x[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
@@ -173,7 +261,7 @@ void AnasaziModel::readcsv2()
 	}
 }
 
-void AnasaziModel::readcsv3()
+void AnasaziModel::readcsv3(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
 {
 	//read "id number","meters north","meters east","type","start date","end date","x","y"
 	int *type, *startdate, *enddate, *x, *y;
@@ -216,7 +304,7 @@ void AnasaziModel::readcsv3()
 	}
 }
 
-void AnasaziModel::readcsv4()
+void AnasaziModel::readcsv4(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
 {
 	//read "year","general","north","mid","natural","upland","kinbiko"
 	int *pdsiyear;
@@ -262,7 +350,7 @@ void AnasaziModel::readcsv4()
 	}
 }
 
-void AnasaziModel::readcsv5()
+void AnasaziModel::readcsv5(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
 {
 	//read "year","general","north","mid","natural","upland","kinbiko"
 	int *hydroyear;
