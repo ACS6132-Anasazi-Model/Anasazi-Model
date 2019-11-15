@@ -40,9 +40,8 @@ private:
 	repast::SharedContext<Household> context;
   //Need to confirm this line
 	repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* discreteSpace;
-
-  //repast::DoubleUniformGenerator fissionGen;
-  //repast::TriangleGenerator deathAgeGen;
+  repast::DoubleUniformGenerator fissionGen = repast::Random::instance()->createUniDoubleGenerator(0,1);
+  repast::TriangleGenerator deathAgeGen = repast::Random::instance()->createTriangleGenerator(0,1,2);
 
 public:
 	AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm);

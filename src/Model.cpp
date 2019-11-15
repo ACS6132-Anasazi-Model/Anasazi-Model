@@ -56,11 +56,11 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	param.fertilityProbability = repast::strToDouble(props->getProperty("fertility.prop"));
 	param.harvestAdjustment = repast::strToDouble(props->getProperty("harvest.adj"));
 
-
 	year = param.startYear;
 	stopAt = param.endYear - param.startYear + 1;
-	//fissionGen = repast::Random::instance()->createUniDoubleGenerator(0.0,1.0);
-	//deathAgeGen = repast::Random::instance()->createTriangleGenerator(0.0,double(param.mostLikelyDeathAge),double(param.maxAge));
+
+	repast::DoubleUniformGenerator fissionGen = repast::Random::instance()->createUniDoubleGenerator(0.0,1.0);
+	repast::TriangleGenerator deathAgeGen = repast::Random::instance()->createTriangleGenerator(0.0,double(param.mostLikelyDeathAge),double(param.maxAge));
 }
 
 AnasaziModel::~AnasaziModel(){
@@ -69,6 +69,7 @@ AnasaziModel::~AnasaziModel(){
 
 void AnasaziModel::initAgents(){
 	std::cout << "Initializing Model\n";
+	Location LocationArr[boardSizeX][boardSizeY];
 }
 
 void AnasaziModel::doPerTick(){
@@ -140,7 +141,7 @@ void AnasaziModel::readcsv2()
 	metersnorth = (int*)malloc(NoOfLine*sizeof(int));
 	meterseast = (int*)malloc(NoOfLine*sizeof(int));
 	startdate = (int*)malloc(NoOfLine*sizeof(int));
-	enddate = (int*)malloc(NoOfLine*sizeof(int));	
+	enddate = (int*)malloc(NoOfLine*sizeof(int));
 	mediandate = (int*)malloc(NoOfLine*sizeof(int));
 	type = (int*)malloc(NoOfLine*sizeof(int));
 	size = (int*)malloc(NoOfLine*sizeof(int));
@@ -157,33 +158,33 @@ void AnasaziModel::readcsv2()
 	while(!file.eof())//read until end of file
 	{
 		getline(file,temp,',');
-		SARGnumber[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		SARGnumber[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		metersnorth[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		metersnorth[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		meterseast[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		meterseast[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		startdate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		startdate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int 		
+		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		mediandate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		mediandate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		type[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		type[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		size[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		size[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		description[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		description[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		roomcount[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		roomcount[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		evelation[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		evelation[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		baselinehouseholds[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		baselinehouseholds[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		x[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		x[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		y[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		y[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		i++;
 	}
 }
@@ -230,9 +231,9 @@ void AnasaziModel::readcsv3()
 		getline(file,temp,',');
 		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		x[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		x[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		y[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		y[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		i++;
 	}
 }
