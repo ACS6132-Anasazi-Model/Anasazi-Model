@@ -86,9 +86,10 @@ void AnasaziModel::initAgents(){
 		}
 	}
 
-	readcsv1(locationSpace);
-	readcsv2(householdSpace);
+	readcsv1();
+	readcsv2();
 	readcsv4();
+	readcsv5();
 	// std::vector<Location*> locationList;
 	// locationSpace->getObjectsAt(repast::Point<int>(50, 50), locationList);
 	// cout<< locationList[0]->getId().id() << "\n";
@@ -96,6 +97,13 @@ void AnasaziModel::initAgents(){
 
 void AnasaziModel::doPerTick(){
 	//std::cout << "Year " << year << "\n";
+	// int a, z , mz;
+	// cin >> a;
+	// cout << hydroLevel(a) << endl;
+	//
+	// cin >> z;
+	// cin >> mz;
+	// cout << yieldFromPDSI(z,mz)<<endl;
 	++year;
 }
 
@@ -108,7 +116,7 @@ bool AnasaziModel::fissionHousehold(){};
 bool AnasaziModel::removeHousehold(){};
 int AnasaziModel::countHousehold(){};
 
-void AnasaziModel::readcsv1(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
+void AnasaziModel::readcsv1()
 {
 	int x,y,z , mz;
 	string zone, maizeZone, temp;
@@ -211,7 +219,7 @@ void AnasaziModel::readcsv1(repast::SharedDiscreteSpace<Location, repast::Strict
 	endloop: ;
 }
 
-void AnasaziModel::readcsv2(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* householdSpace)
+void AnasaziModel::readcsv2()
 {
 	//read "start date","end date","median date","baseline households","x","y"
 	int startdate, enddate, baselinehouseholds, x, y;
@@ -261,7 +269,7 @@ void AnasaziModel::readcsv2(repast::SharedDiscreteSpace<Household, repast::Stric
 	endloop: ;
 }
 
-void AnasaziModel::readcsv3(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
+void AnasaziModel::readcsv3()
 {
 	//read "id number","meters north","meters east","type","start date","end date","x","y"
 	int *type, *startdate, *enddate, *x, *y;
@@ -340,78 +348,70 @@ void AnasaziModel::readcsv4()
 	endloop: ;
 }
 
-void AnasaziModel::readcsv5(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
+void AnasaziModel::readcsv5()
 {
 	//read "year","general","north","mid","natural","upland","kinbiko"
-	int *hydroyear;
-	double *hydrogeneral, *hydronorth, *hydromid, *hydronatural, *hydroupland, *hydrokinbiko;
 	string temp;
-	int i = 0, NoOfLine = 0;
+	int i =0;
 
-	std::ifstream file ("hydro.csv");//define file object and open hydro.csv
+	std::ifstream file ("data/hydro.csv");//define file object and open hydro.csv
 	file.ignore(500,'\n');//Ignore first line
-	while(!file.eof())
-	{
-		getline(file,temp);
-		++NoOfLine;
-	}
 
-	hydroyear = (int*)malloc(NoOfLine*sizeof(int));
-	hydrogeneral = (double*)malloc(NoOfLine*sizeof(double));
-	hydronorth = (double*)malloc(NoOfLine*sizeof(double));
-	hydromid = (double*)malloc(NoOfLine*sizeof(double));
-	hydronatural = (double*)malloc(NoOfLine*sizeof(double));
-	hydroupland = (double*)malloc(NoOfLine*sizeof(double));
-	hydrokinbiko = (double*)malloc(NoOfLine*sizeof(double));
-
-	file.clear();  // Go back to start
-	file.seekg( 0 );
-	while(!file.eof())//read until end of file
+	while(1)//read until end of file
 	{
 		getline(file,temp,',');
-		hydroyear[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		hydrogeneral[i] = repast::strToDouble(temp); //Read until ',' and convert to double
-		getline(file,temp,',');
-		hydronorth[i] = repast::strToDouble(temp); //Read until ',' and convert to double
-		getline(file,temp,',');
-		hydromid[i] = repast::strToDouble(temp); //Read until ',' and convert to double
-		getline(file,temp,',');
-		hydronatural[i] = repast::strToDouble(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		hydroupland[i] = repast::strToDouble(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		hydrokinbiko[i] = repast::strToDouble(temp); //Read until ',' and convert to double
-		i++;
+		if(!temp.empty())
+		{
+			hydro[i].year = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			hydro[i].hydroGeneral = repast::strToDouble(temp); //Read until ',' and convert to double
+			getline(file,temp,',');
+			hydro[i].hydroNorth = repast::strToDouble(temp); //Read until ',' and convert to double
+			getline(file,temp,',');
+			hydro[i].hydroMid = repast::strToDouble(temp); //Read until ',' and convert to double
+			getline(file,temp,',');
+			hydro[i].hydroNatural = repast::strToDouble(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			hydro[i].hydroUpland = repast::strToDouble(temp); //Read until ',' and convert to int
+			getline(file,temp,'\n');
+			hydro[i].hydroKinbiko = repast::strToDouble(temp); //Read until ',' and convert to double
+			i++;
+		}
+		else
+		{
+			goto endloop;
+		}
 	}
+	endloop: ;
 }
 
 int AnasaziModel::yieldFromPDSI(int zone, int maizeZone)
 {
 	int pdsiValue, row, col;
-	if(zone == 1)
+	switch(zone)
 	{
-		pdsiValue = pdsi[year-param.startYear].pdsiNatural;
-	}
-	else if(zone == 2)
-	{
-		pdsiValue = pdsi[year-param.startYear].pdsiKinbiko;
-	}
-	else if(zone == 3)
-	{
-		pdsiValue = pdsi[year-param.startYear].pdsiUpland;
-	}
-	else if(zone == 4 || zone == 6)
-	{
-		pdsiValue = pdsi[year-param.startYear].pdsiNorth;
-	}
-	else if(zone == 5)
-	{
-		pdsiValue = pdsi[year-param.startYear].pdsiGeneral;
-	}
-	else if(zone == 7 || zone == 8)
-	{
-		pdsiValue = pdsi[year-param.startYear].pdsiMid;
+		case 1:
+			pdsiValue = pdsi[year-param.startYear].pdsiNatural;
+			break;
+		case 2:
+			pdsiValue = pdsi[year-param.startYear].pdsiKinbiko;
+			break;
+		case 3:
+			pdsiValue = pdsi[year-param.startYear].pdsiUpland;
+			break;
+		case 4:
+		case 6:
+			pdsiValue = pdsi[year-param.startYear].pdsiNorth;
+			break;
+		case 5:
+			pdsiValue = pdsi[year-param.startYear].pdsiGeneral;
+			break;
+		case 7:
+		case 8:
+			pdsiValue = pdsi[year-param.startYear].pdsiMid;
+			break;
+		default:
+			return 0;
 	}
 
 	/* Rows of pdsi table*/
@@ -441,21 +441,9 @@ int AnasaziModel::yieldFromPDSI(int zone, int maizeZone)
 	}
 
 	/* Col of pdsi table*/
-	if(maizeZone == 2)
+	if(maizeZone >= 2)
 	{
-		col = 0;
-	}
-	else if(maizeZone == 3)
-	{
-		col = 1;
-	}
-	else if(maizeZone == 4)
-	{
-		col = 2;
-	}
-	else if(maizeZone == 5)
-	{
-		col = 3;
+		col = maizeZone - 2;
 	}
 	else
 	{
@@ -463,5 +451,27 @@ int AnasaziModel::yieldFromPDSI(int zone, int maizeZone)
 	}
 
 	return yieldLevels[row][col];
+}
 
+double AnasaziModel::hydroLevel(int zone)
+{
+	switch(zone)
+	{
+		case 1:
+			return hydro[year-param.startYear].hydroNatural;
+		case 2:
+			return hydro[year-param.startYear].hydroKinbiko;
+		case 3:
+			return hydro[year-param.startYear].hydroUpland;
+		case 4:
+		case 6:
+			return hydro[year-param.startYear].hydroNorth;
+		case 5:
+			return hydro[year-param.startYear].hydroGeneral;
+		case 7:
+		case 8:
+			return hydro[year-param.startYear].hydroMid;
+		default:
+			return 0;
+	}
 }

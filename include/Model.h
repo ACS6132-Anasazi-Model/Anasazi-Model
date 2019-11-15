@@ -50,6 +50,17 @@ private:
     double pdsiKinbiko;
   } pdsi[NUMBER_OF_YEARS];
 
+  struct Hydro
+  {
+    int year;
+    double hydroGeneral;
+    double hydroNorth;
+    double hydroMid;
+    double hydroNatural;
+    double hydroUpland;
+    double hydroKinbiko;
+  } hydro[NUMBER_OF_YEARS];
+
   const int yieldLevels[5][4] = { {617,  514, 411, 642},
                                   {719,  599, 479, 749},
                                   {821,  684, 547, 855},
@@ -73,12 +84,13 @@ public:
   bool fissionHousehold();
   bool removeHousehold();
   int countHousehold();
-  void readcsv1(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
-  void readcsv2(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* householdSpace);
-  void readcsv3(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
+  void readcsv1();
+  void readcsv2();
+  void readcsv3();
   void readcsv4();
-  void readcsv5(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
+  void readcsv5();
   int yieldFromPDSI(int zone, int maizeZone);
+  double hydroLevel(int zone);
 };
 
 #endif
