@@ -17,7 +17,8 @@ private:
   int stopAt;
 	int boardSizeX, boardSizeY, procX, procY, bufferSize;
   int randomSeed;
-  std::vector<Household> listOfHousehold;
+  int houseID = 0;
+  //std::vector<Household> listOfHousehold;
   struct Parameters
   {
     int startYear;
@@ -54,7 +55,7 @@ public:
   bool removeHousehold();
   int countHousehold();
   void readcsv1(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
-  void readcsv2(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
+  void readcsv2(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* householdSpace);
   void readcsv3(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
   void readcsv4(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
   void readcsv5(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);

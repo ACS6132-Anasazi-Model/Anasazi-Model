@@ -87,6 +87,7 @@ void AnasaziModel::initAgents(){
 	}
 
 	readcsv1(locationSpace);
+	readcsv2(householdSpace);
 	// std::vector<Location*> locationList;
 	// locationSpace->getObjectsAt(repast::Point<int>(50, 50), locationList);
 	// cout<< locationList[0]->getId().id() << "\n";
@@ -111,7 +112,7 @@ void AnasaziModel::readcsv1(repast::SharedDiscreteSpace<Location, repast::Strict
 	int x,y,z , mz;
 	string zone, maizeZone, temp;
 
-	std::ifstream file ("map.csv");//define file object and open map.csv
+	std::ifstream file ("data/map.csv");//define file object and open map.csv
 	file.ignore(500,'\n');//Ignore first line
 
 	while(1)//read until end of file
@@ -119,47 +120,46 @@ void AnasaziModel::readcsv1(repast::SharedDiscreteSpace<Location, repast::Strict
 		getline(file,temp,',');
 		if(!temp.empty())
 		{
-			getline(file,temp,',');
+			//getline(file,temp,',');
 			x = repast::strToInt(temp); //Read until ',' and convert to int & store in x
 			getline(file,temp,',');
 			y = repast::strToInt(temp); //Read until ',' and convert to int & store in y
 			getline(file,temp,','); //skip data
 			getline(file,zone,',');// read until ',' and store into zone
 			getline(file,maizeZone,'\n');// read until next line and store into maizeZone
-			std::cout << zone << std::endl;
-			if(zone == "Empty")
+			if(zone == "\"Empty\"")
 			{
 				z = 0;
 			}
-			else if(zone == "Natural")
+			else if(zone == "\"Natural\"")
 			{
 				z = 1;
 			}
-			else if(zone == "Kinbiko")
+			else if(zone == "\"Kinbiko\"")
 			{
 				z = 2;
 			}
-			else if(zone == "Uplands")
+			else if(zone == "\"Uplands\"")
 			{
 				z = 3;
 			}
-			else if(zone == "North")
+			else if(zone == "\"North\"")
 			{
 				z = 4;
 			}
-			else if(zone == "General")
+			else if(zone == "\"General\"")
 			{
 				z = 5;
 			}
-			else if(zone == "North Dunes")
+			else if(zone == "\"North Dunes\"")
 			{
 				z = 6;
 			}
-			else if(zone == "Mid Dunes")
+			else if(zone == "\"Mid Dunes\"")
 			{
 				z = 7;
 			}
-			else if(zone == "Mid")
+			else if(zone == "\"Mid\"")
 			{
 				z = 8;
 			}
@@ -169,34 +169,34 @@ void AnasaziModel::readcsv1(repast::SharedDiscreteSpace<Location, repast::Strict
 				std::cout << zone << std::endl;
 			}
 
-			if(maizeZone == "Empty")
+			if(maizeZone == "\"Empty\"")
 			{
 				mz = 0;
 			}
-			else if(maizeZone == "No_Yield")
+			else if(maizeZone == "\"No_Yield\"")
 			{
 				mz = 1;
 			}
-			else if(maizeZone == "Yield_1")
+			else if(maizeZone == "\"Yield_1\"")
 			{
 				mz = 2;
 			}
-			else if(maizeZone == "Yield_2")
+			else if(maizeZone == "\"Yield_2\"")
 			{
 				mz = 3;
 			}
-			else if(maizeZone == "Yield_3")
+			else if(maizeZone == "\"Yield_3\"")
 			{
 				mz = 4;
 			}
-			else if(maizeZone == "Sand_dune")
+			else if(maizeZone == "\"Sand_dune\"")
 			{
 				mz = 5;
 			}
 			else
 			{
 				mz = 99;
-				std::cout << maizeZone << std::endl;
+				//std::cout << maizeZone << std::endl;
 			}
 			std::vector<Location*> locationList;
 			locationSpace->getObjectsAt(repast::Point<int>(x, y), locationList);
@@ -210,55 +210,54 @@ void AnasaziModel::readcsv1(repast::SharedDiscreteSpace<Location, repast::Strict
 	endloop: ;
 }
 
-void AnasaziModel::readcsv2(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
+void AnasaziModel::readcsv2(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* householdSpace)
 {
 	//read "start date","end date","median date","baseline households","x","y"
-	int *startdate, *enddate, *mediandate, *baselinehouseholds, *x, *y;
+	int startdate, enddate, baselinehouseholds, x, y;
 	string temp;
-	int i = 0, NoOfLine = 0;
-
-	std::ifstream file ("settlement.csv");//define file object and open settlement.csv
+	int rank = repast::RepastProcess::instance()->rank();
+	std::ifstream file ("data/settlement.csv");//define file object and open settlement.csv
 	file.ignore(500,'\n');//Ignore first line
-	while(!file.eof())
-	{
-		getline(file,temp);
-		++NoOfLine;
-	}
-
-	startdate = (int*)malloc(NoOfLine*sizeof(int));
-	enddate = (int*)malloc(NoOfLine*sizeof(int));
-	mediandate = (int*)malloc(NoOfLine*sizeof(int));
-	baselinehouseholds = (int*)malloc(NoOfLine*sizeof(int));
-	x = (int*)malloc(NoOfLine*sizeof(int));
-	y = (int*)malloc(NoOfLine*sizeof(int));
-
-
-	file.clear();  // Go back to start
-	file.seekg( 0 );
-	while(!file.eof())//read until end of file
+	while(1)//read until end of file
 	{
 		getline(file,temp,',');
-		getline(file,temp,',');
-		getline(file,temp,',');
-		getline(file,temp,',');
-		startdate[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		mediandate[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');  //skip data
-		getline(file,temp,',');
-		getline(file,temp,',');
-		getline(file,temp,',');
-		getline(file,temp,',');
-		getline(file,temp,',');
-		baselinehouseholds[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		x[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		y[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		i++;
+		if(!temp.empty())
+		{
+			getline(file,temp,',');
+			getline(file,temp,',');
+			getline(file,temp,',');
+			startdate = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			enddate = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			getline(file,temp,',');  //skip data
+			getline(file,temp,',');
+			getline(file,temp,',');
+			getline(file,temp,',');
+			getline(file,temp,',');
+			getline(file,temp,',');
+			baselinehouseholds = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			x = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,'\n');
+			y = repast::strToInt(temp); //Read until ',' and convert to int
+			if(startdate<=800 && enddate >800)
+			{
+				repast::AgentId id(houseID, rank, 1);
+				int deathAge = deathAgeGen.next();
+				Household* agent = new Household(id, deathAge);
+				context.addAgent(agent);
+				householdSpace->moveTo(id, repast::Point<int>(x, y));
+				houseID++;
+				std::cout << id.id() << ", x= " << x << ", y= " << y << std::endl;
+			}
+		}
+		else
+		{
+			goto endloop;
+		}
 	}
+	endloop: ;
 }
 
 void AnasaziModel::readcsv3(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
