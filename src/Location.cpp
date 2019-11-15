@@ -32,8 +32,8 @@ void Location::calculateYield(int y, int q, double Ha){
 
 bool Location::getWater(int year, char zone, int watertype, int startdate, int enddate, int waterx, int watery){
 	int existStreams = 0, existAlluvium = 0;
-    bool watersource = 0;
-    if (watertype == 1){
+  bool watersource = 0;
+  if (watertype == 1){
 		if ((year >= 280 && year < 360) or (year >= 800 && year < 930) or (year >= 1300 && year < 1450)){
 			existStreams = 1;
 		}
@@ -47,14 +47,14 @@ bool Location::getWater(int year, char zone, int watertype, int startdate, int e
 			existAlluvium = 0;
 		}
 		//for each location {
-		
+
 		if ((existAlluvium == 1) && ((zone == 'General') or (zone == 'North') or (zone == 'Mid') or (zone == 'Kinbiko'))) {
 				watersource = 1;
 			}
 			else if ((existStreams == 1) && (zone == 'Kinbiko')) {
 				watersource = 1;
 			}
-		//for these locations: (location 72 114) (location 70 113) (location 69 112)	(location 68 111) (location 67 110) (location 66 109) (location 65 108) (location 65 107)) 
+		//for these locations: (location 72 114) (location 70 113) (location 69 112)	(location 68 111) (location 67 110) (location 66 109) (location 65 108) (location 65 107))
 		if (((waterx==72)&&(watery==114))or((waterx==70)&&(watery==113))or((waterx==69)&&(watery==112))or((waterx==68)&&(watery==111))or((waterx==67)&&(watery==110))or((waterx==66)&&(watery==109))or((waterx==65)&&(watery==108))or((waterx==65)&&(watery==107))){
 			watersource = 1;
 		}

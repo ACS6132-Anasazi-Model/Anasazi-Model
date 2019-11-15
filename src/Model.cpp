@@ -88,6 +88,7 @@ void AnasaziModel::initAgents(){
 
 	readcsv1(locationSpace);
 	readcsv2(householdSpace);
+	readcsv4();
 	// std::vector<Location*> locationList;
 	// locationSpace->getObjectsAt(repast::Point<int>(50, 50), locationList);
 	// cout<< locationList[0]->getId().id() << "\n";
@@ -267,7 +268,7 @@ void AnasaziModel::readcsv3(repast::SharedDiscreteSpace<Location, repast::Strict
 	string temp;
 	int i = 0, NoOfLine = 0;
 
-	std::ifstream file ("water.csv");//define file object and open water.csv
+	std::ifstream file ("data/water.csv");//define file object and open water.csv
 	file.ignore(500,'\n');//Ignore first line
 	while(!file.eof())
 	{
@@ -303,50 +304,40 @@ void AnasaziModel::readcsv3(repast::SharedDiscreteSpace<Location, repast::Strict
 	}
 }
 
-void AnasaziModel::readcsv4(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
+void AnasaziModel::readcsv4()
 {
 	//read "year","general","north","mid","natural","upland","kinbiko"
-	int *pdsiyear;
-	double *pdsigeneral, *pdsinorth, *pdsimid, *pdsinatural, *pdsiupland, *pdsikinbiko;
+	int i=0;
 	string temp;
-	int i = 0, NoOfLine = 0;
 
-	std::ifstream file ("pdsi.csv");//define file object and open pdsi.csv
+	std::ifstream file ("data/pdsi.csv");//define file object and open pdsi.csv
 	file.ignore(500,'\n');//Ignore first line
-	while(!file.eof())
-	{
-		getline(file,temp);
-		++NoOfLine;
-	}
 
-	pdsiyear = (int*)malloc(NoOfLine*sizeof(int));
-	pdsigeneral = (double*)malloc(NoOfLine*sizeof(double));
-	pdsinorth = (double*)malloc(NoOfLine*sizeof(double));
-	pdsimid = (double*)malloc(NoOfLine*sizeof(double));
-	pdsinatural = (double*)malloc(NoOfLine*sizeof(double));
-	pdsiupland = (double*)malloc(NoOfLine*sizeof(double));
-	pdsikinbiko = (double*)malloc(NoOfLine*sizeof(double));
-
-	file.clear();  // Go back to start
-	file.seekg( 0 );
-	while(!file.eof())//read until end of file
+	while(1)//read until end of file
 	{
 		getline(file,temp,',');
-		pdsiyear[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		pdsigeneral[i] = repast::strToDouble(temp); //Read until ',' and convert to double
-		getline(file,temp,',');
-		pdsinorth[i] = repast::strToDouble(temp); //Read until ',' and convert to double
-		getline(file,temp,',');
-		pdsimid[i] = repast::strToDouble(temp); //Read until ',' and convert to double
-		getline(file,temp,',');
-		pdsinatural[i] = repast::strToDouble(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		pdsiupland[i] = repast::strToDouble(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		pdsikinbiko[i] = repast::strToDouble(temp); //Read until ',' and convert to double
-		i++;
+		if(!temp.empty())
+		{
+			pdsi[i].year = repast::strToInt(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			pdsi[i].pdsiGeneral = repast::strToDouble(temp); //Read until ',' and convert to double
+			getline(file,temp,',');
+			pdsi[i].pdsiNorth = repast::strToDouble(temp); //Read until ',' and convert to double
+			getline(file,temp,',');
+			pdsi[i].pdsiMid = repast::strToDouble(temp); //Read until ',' and convert to double
+			getline(file,temp,',');
+			pdsi[i].pdsiNatural = repast::strToDouble(temp); //Read until ',' and convert to int
+			getline(file,temp,',');
+			pdsi[i].pdsiUpland = repast::strToDouble(temp); //Read until ',' and convert to int
+			getline(file,temp,'\n');
+			pdsi[i].pdsiKinbiko = repast::strToDouble(temp); //Read until ',' and convert to double
+			i++;
+		}
+		else{
+			goto endloop;
+		}
 	}
+	endloop: ;
 }
 
 void AnasaziModel::readcsv5(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace)
@@ -393,4 +384,84 @@ void AnasaziModel::readcsv5(repast::SharedDiscreteSpace<Location, repast::Strict
 		hydrokinbiko[i] = repast::strToDouble(temp); //Read until ',' and convert to double
 		i++;
 	}
+}
+
+int AnasaziModel::yieldFromPDSI(int zone, int maizeZone)
+{
+	int pdsiValue, row, col;
+	if(zone == 1)
+	{
+		pdsiValue = pdsi[year-param.startYear].pdsiNatural;
+	}
+	else if(zone == 2)
+	{
+		pdsiValue = pdsi[year-param.startYear].pdsiKinbiko;
+	}
+	else if(zone == 3)
+	{
+		pdsiValue = pdsi[year-param.startYear].pdsiUpland;
+	}
+	else if(zone == 4 || zone == 6)
+	{
+		pdsiValue = pdsi[year-param.startYear].pdsiNorth;
+	}
+	else if(zone == 5)
+	{
+		pdsiValue = pdsi[year-param.startYear].pdsiGeneral;
+	}
+	else if(zone == 7 || zone == 8)
+	{
+		pdsiValue = pdsi[year-param.startYear].pdsiMid;
+	}
+
+	/* Rows of pdsi table*/
+	if(pdsiValue < -3)
+	{
+		row = 0;
+	}
+	else if(pdsiValue >= -3 && pdsiValue < -1)
+	{
+		row = 1;
+	}
+	else if(pdsiValue >= -1 && pdsiValue < 1)
+	{
+		row = 2;
+	}
+	else if(pdsiValue >= 1 && pdsiValue < 3)
+	{
+		row = 3;
+	}
+	else if(pdsiValue >= 3)
+	{
+		row = 4;
+	}
+	else
+	{
+		return 0;
+	}
+
+	/* Col of pdsi table*/
+	if(maizeZone == 2)
+	{
+		col = 0;
+	}
+	else if(maizeZone == 3)
+	{
+		col = 1;
+	}
+	else if(maizeZone == 4)
+	{
+		col = 2;
+	}
+	else if(maizeZone == 5)
+	{
+		col = 3;
+	}
+	else
+	{
+		return 0;
+	}
+
+	return yieldLevels[row][col];
+
 }

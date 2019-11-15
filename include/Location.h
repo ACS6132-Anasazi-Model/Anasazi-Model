@@ -11,7 +11,22 @@ private:
 	repast::AgentId* householdID;
 	int state;
 	int zone;
+	/*Empty 		- 0
+	Natural 		- 1
+	Kinbiko 		- 2
+	Uplands 		- 3
+	North 			- 4
+	General 		- 5
+	North Dunes - 6
+	Mid Dunes 	- 7
+	Mid 				- 8*/
 	int maizeZone;
+	/*Empty 		- 0
+		No_Yield 	- 1
+		Yield_1		- 2 || North and Mid Valley, Kinbiko Canyon
+		Yield_2 	- 3 || General Valley
+		Yield_3		- 4 || Arable Uplands
+		Sand_dune - 5 || Dunes */
 	bool isWater;
 	int presentHarvest;
 	int expectedHarvest;

@@ -11,6 +11,8 @@
 
 #include "Household.h"
 
+#define NUMBER_OF_YEARS 551
+
 class AnasaziModel{
 private:
   int year;
@@ -37,6 +39,23 @@ private:
     double harvestAdjustment;
   } param;
 
+  struct PDSI
+  {
+    int year;
+    double pdsiGeneral;
+    double pdsiNorth;
+    double pdsiMid;
+    double pdsiNatural;
+    double pdsiUpland;
+    double pdsiKinbiko;
+  } pdsi[NUMBER_OF_YEARS];
+
+  const int yieldLevels[5][4] = { {617,  514, 411, 642},
+                                  {719,  599, 479, 749},
+                                  {821,  684, 547, 855},
+                                  {988,  824, 659, 1030},
+                                  {1153, 961, 769, 1201}};
+
 	repast::Properties* props;
 	repast::SharedContext<Household> context;
   repast::SharedContext<Location> locationcontext;  //Need to confirm this line
@@ -57,8 +76,9 @@ public:
   void readcsv1(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
   void readcsv2(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* householdSpace);
   void readcsv3(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
-  void readcsv4(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
+  void readcsv4();
   void readcsv5(repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace);
+  int yieldFromPDSI(int zone, int maizeZone);
 };
 
 #endif
