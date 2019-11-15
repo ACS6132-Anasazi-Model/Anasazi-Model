@@ -25,7 +25,7 @@ public:
 
 	virtual repast::AgentId& getId() { return LocationID; }
 	virtual const repast::AgentId& getId() const { return LocationID; }
-	bool getWater();
+	bool getWater(int year, char zone, int watertype, int startdate, int enddate, int waterx, int watery);
 	int getExpectedYield();
 	void calculateYield(int y, int q, double Ha);
 	Location* assignField();
