@@ -121,10 +121,77 @@ void AnasaziModel::readcsv1()
 	}
 }
 
+void AnasaziModel::readcsv2()
+{
+	//read "SARG number","meters north","meters east","start date","end date","median date","type","size","description","room count","elevation","baseline households","x","y"
+	int *SARGnumber, *metersnorth, *meterseast, *startdate, *enddate, *mediandate, *type, *size, *description, *roomcount, *evelation, *baselinehouseholds, *x, *y;
+	string temp;
+	int i = 0, NoOfLine = 0;
+
+	std::ifstream file ("settlement.csv");//define file object and open settlement.csv
+	file.ignore(500,'\n');//Ignore first line
+	while(!file.eof())
+	{
+		getline(file,temp);
+		++NoOfLine;
+	}
+
+	SARGnumber = (int*)malloc(NoOfLine*sizeof(int));
+	metersnorth = (int*)malloc(NoOfLine*sizeof(int));
+	meterseast = (int*)malloc(NoOfLine*sizeof(int));
+	startdate = (int*)malloc(NoOfLine*sizeof(int));
+	enddate = (int*)malloc(NoOfLine*sizeof(int));	
+	mediandate = (int*)malloc(NoOfLine*sizeof(int));
+	type = (int*)malloc(NoOfLine*sizeof(int));
+	size = (int*)malloc(NoOfLine*sizeof(int));
+	description = (int*)malloc(NoOfLine*sizeof(int));
+	roomcount = (int*)malloc(NoOfLine*sizeof(int));
+	evelation = (int*)malloc(NoOfLine*sizeof(int));
+	baselinehouseholds = (int*)malloc(NoOfLine*sizeof(int));
+	x = (int*)malloc(NoOfLine*sizeof(int));
+	y = (int*)malloc(NoOfLine*sizeof(int));
+
+
+	file.clear();  // Go back to start
+	file.seekg( 0 );
+	while(!file.eof())//read until end of file
+	{
+		getline(file,temp,',');
+		SARGnumber[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		metersnorth[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		meterseast[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		startdate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int 		
+		getline(file,temp,',');
+		mediandate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		type[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		size[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		description[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		roomcount[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		evelation[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		baselinehouseholds[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		x[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');
+		y[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		i++;
+	}
+}
+
 void AnasaziModel::readcsv3()
 {
 	//read "id number","meters north","meters east","type","start date","end date","x","y"
-	int *idnumber, *metersnorth, *meterseast, *type, *startdate, *enddate, *x1, *y1;
+	int *idnumber, *metersnorth, *meterseast, *type, *startdate, *enddate, *x, *y;
 	string temp;
 	int i = 0, NoOfLine = 0;
 
@@ -142,8 +209,8 @@ void AnasaziModel::readcsv3()
 	type = (int*)malloc(NoOfLine*sizeof(int));
 	startdate = (int*)malloc(NoOfLine*sizeof(int));
 	enddate = (int*)malloc(NoOfLine*sizeof(int));
-	x1 = (int*)malloc(NoOfLine*sizeof(int));
-	y1 = (int*)malloc(NoOfLine*sizeof(int));
+	x = (int*)malloc(NoOfLine*sizeof(int));
+	y = (int*)malloc(NoOfLine*sizeof(int));
 
 
 	file.clear();  // Go back to start
@@ -163,9 +230,9 @@ void AnasaziModel::readcsv3()
 		getline(file,temp,',');
 		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
 		getline(file,temp,',');
-		x1[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		x[i] = repast::strToInt(temp); //Read until ',' and convert to int 
 		getline(file,temp,',');
-		y1[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		y[i] = repast::strToInt(temp); //Read until ',' and convert to int 
 		i++;
 	}
 }
