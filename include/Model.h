@@ -54,6 +54,7 @@ public:
   bool removeHousehold();
   int countHousehold();
   void readcsv1();
+  void readcsv2();
   void readcsv3();
   void readcsv4();
   void readcsv5();
