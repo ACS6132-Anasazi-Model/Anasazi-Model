@@ -124,8 +124,8 @@ void AnasaziModel::readcsv1()
 
 void AnasaziModel::readcsv2()
 {
-	//read "SARG number","meters north","meters east","start date","end date","median date","type","size","description","room count","elevation","baseline households","x","y"
-	int *SARGnumber, *metersnorth, *meterseast, *startdate, *enddate, *mediandate, *type, *size, *description, *roomcount, *evelation, *baselinehouseholds, *x, *y;
+	//read "start date","end date","median date","baseline households","x","y"
+	int *startdate, *enddate, *mediandate, *baselinehouseholds, *x, *y;
 	string temp;
 	int i = 0, NoOfLine = 0;
 
@@ -137,17 +137,9 @@ void AnasaziModel::readcsv2()
 		++NoOfLine;
 	}
 
-	SARGnumber = (int*)malloc(NoOfLine*sizeof(int));
-	metersnorth = (int*)malloc(NoOfLine*sizeof(int));
-	meterseast = (int*)malloc(NoOfLine*sizeof(int));
 	startdate = (int*)malloc(NoOfLine*sizeof(int));
 	enddate = (int*)malloc(NoOfLine*sizeof(int));
 	mediandate = (int*)malloc(NoOfLine*sizeof(int));
-	type = (int*)malloc(NoOfLine*sizeof(int));
-	size = (int*)malloc(NoOfLine*sizeof(int));
-	description = (int*)malloc(NoOfLine*sizeof(int));
-	roomcount = (int*)malloc(NoOfLine*sizeof(int));
-	evelation = (int*)malloc(NoOfLine*sizeof(int));
 	baselinehouseholds = (int*)malloc(NoOfLine*sizeof(int));
 	x = (int*)malloc(NoOfLine*sizeof(int));
 	y = (int*)malloc(NoOfLine*sizeof(int));
@@ -158,29 +150,21 @@ void AnasaziModel::readcsv2()
 	while(!file.eof())//read until end of file
 	{
 		getline(file,temp,',');
-		SARGnumber[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		metersnorth[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		meterseast[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
 		startdate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
 		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		mediandate[i] = repast::strToInt(temp); //Read until ',' and convert to int
+		mediandate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		getline(file,temp,',');  //skip data
 		getline(file,temp,',');
-		type[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		size[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		description[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		roomcount[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		evelation[i] = repast::strToInt(temp); //Read until ',' and convert to int
-		getline(file,temp,',');
-		baselinehouseholds[i] = repast::strToInt(temp); //Read until ',' and convert to int
+		baselinehouseholds[i] = repast::strToInt(temp); //Read until ',' and convert to int 
 		getline(file,temp,',');
 		x[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
@@ -192,7 +176,7 @@ void AnasaziModel::readcsv2()
 void AnasaziModel::readcsv3()
 {
 	//read "id number","meters north","meters east","type","start date","end date","x","y"
-	int *idnumber, *metersnorth, *meterseast, *type, *startdate, *enddate, *x, *y;
+	int *type, *startdate, *enddate, *x, *y;
 	string temp;
 	int i = 0, NoOfLine = 0;
 
@@ -204,9 +188,6 @@ void AnasaziModel::readcsv3()
 		++NoOfLine;
 	}
 
-	idnumber = (int*)malloc(NoOfLine*sizeof(int));
-	metersnorth = (int*)malloc(NoOfLine*sizeof(int));
-	meterseast = (int*)malloc(NoOfLine*sizeof(int));
 	type = (int*)malloc(NoOfLine*sizeof(int));
 	startdate = (int*)malloc(NoOfLine*sizeof(int));
 	enddate = (int*)malloc(NoOfLine*sizeof(int));
@@ -219,11 +200,8 @@ void AnasaziModel::readcsv3()
 	while(!file.eof())//read until end of file
 	{
 		getline(file,temp,',');
-		idnumber[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		metersnorth[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		meterseast[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
 		type[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
