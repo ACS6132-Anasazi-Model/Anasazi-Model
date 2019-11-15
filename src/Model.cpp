@@ -151,21 +151,21 @@ void AnasaziModel::readcsv3()
 	while(!file.eof())//read until end of file
 	{
 		getline(file,temp,',');
-		idnumber[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		idnumber[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		metersnorth[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		metersnorth[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		meterseast[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		meterseast[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		type[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		type[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		startdate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		startdate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		enddate[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		x1[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		x1[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		y1[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		y1[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		i++;
 	}
 }
@@ -199,7 +199,7 @@ void AnasaziModel::readcsv4()
 	while(!file.eof())//read until end of file
 	{
 		getline(file,temp,',');
-		pdsiyear[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		pdsiyear[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
 		pdsigeneral[i] = repast::strToDouble(temp); //Read until ',' and convert to double
 		getline(file,temp,',');
@@ -207,9 +207,9 @@ void AnasaziModel::readcsv4()
 		getline(file,temp,',');
 		pdsimid[i] = repast::strToDouble(temp); //Read until ',' and convert to double
 		getline(file,temp,',');
-		pdsinatural[i] = repast::strToDouble(temp); //Read until ',' and convert to int 
+		pdsinatural[i] = repast::strToDouble(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		pdsiupland[i] = repast::strToDouble(temp); //Read until ',' and convert to int 
+		pdsiupland[i] = repast::strToDouble(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
 		pdsikinbiko[i] = repast::strToDouble(temp); //Read until ',' and convert to double
 		i++;
@@ -245,7 +245,7 @@ void AnasaziModel::readcsv5()
 	while(!file.eof())//read until end of file
 	{
 		getline(file,temp,',');
-		hydroyear[i] = repast::strToInt(temp); //Read until ',' and convert to int 
+		hydroyear[i] = repast::strToInt(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
 		hydrogeneral[i] = repast::strToDouble(temp); //Read until ',' and convert to double
 		getline(file,temp,',');
@@ -253,9 +253,9 @@ void AnasaziModel::readcsv5()
 		getline(file,temp,',');
 		hydromid[i] = repast::strToDouble(temp); //Read until ',' and convert to double
 		getline(file,temp,',');
-		hydronatural[i] = repast::strToDouble(temp); //Read until ',' and convert to int 
+		hydronatural[i] = repast::strToDouble(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
-		hydroupland[i] = repast::strToDouble(temp); //Read until ',' and convert to int 
+		hydroupland[i] = repast::strToDouble(temp); //Read until ',' and convert to int
 		getline(file,temp,',');
 		hydrokinbiko[i] = repast::strToDouble(temp); //Read until ',' and convert to double
 		i++;

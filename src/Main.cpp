@@ -2,7 +2,6 @@
 #include "repast_hpc/RepastProcess.h"
 
 #include "Model.h"
-#include "Field.h"
 #include "Location.h"
 #include "Household.h"
 

@@ -5,12 +5,12 @@
 #include "repast_hpc/SharedContext.h"
 #include "repast_hpc/SharedDiscreteSpace.h"
 #include "repast_hpc/Random.h"
-#include "Field.h"
+#include "Location.h"
 
 class Household{
 private:
 	repast::AgentId householdId;
-	Field* assignedField;
+	Location* assignedField;
   int maizeStorge;
 	bool maizeSatisfied;
   bool householdFission;
