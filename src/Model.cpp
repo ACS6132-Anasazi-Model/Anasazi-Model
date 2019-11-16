@@ -19,7 +19,8 @@
 
 #include "Model.h"
 
-AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm), locationcontext(comm){
+AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm), locationcontext(comm)
+{
 	props = new repast::Properties(propsFile, argc, argv, comm);
 	boardSizeX = repast::strToInt(props->getProperty("board.size.x"));
 	boardSizeY = repast::strToInt(props->getProperty("board.size.y"));
@@ -65,11 +66,13 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	repast::TriangleGenerator deathAgeGen = repast::Random::instance()->createTriangleGenerator(0.0,double(param.mostLikelyDeathAge),double(param.maxAge));
 }
 
-AnasaziModel::~AnasaziModel(){
+AnasaziModel::~AnasaziModel()
+{
 	delete props;
 }
 
-void AnasaziModel::initAgents(){
+void AnasaziModel::initAgents()
+{
 	std::cout << "Initializing Model\n";
 	int rank = repast::RepastProcess::instance()->rank();
 
@@ -85,10 +88,10 @@ void AnasaziModel::initAgents(){
 			LocationID++;
 		}
 	}
-
-	readcsv1(locationSpace);
-	readcsv3(waterSpace);
-	readcsv2(householdSpace);
+	checkWaterConditions();
+	readcsv1();
+	readcsv2();
+	readcsv3();
 	readcsv4();
 	readcsv5();
 	// std::vector<Location*> locationList;
@@ -96,7 +99,8 @@ void AnasaziModel::initAgents(){
 	// cout<< locationList[0]->getId().id() << "\n";
 }
 
-void AnasaziModel::doPerTick(){
+void AnasaziModel::doPerTick()
+{
 	//std::cout << "Year " << year << "\n";
 	// int a, z , mz;
 	// cin >> a;
@@ -108,7 +112,8 @@ void AnasaziModel::doPerTick(){
 	++year;
 }
 
-void AnasaziModel::initSchedule(repast::ScheduleRunner& runner){
+void AnasaziModel::initSchedule(repast::ScheduleRunner& runner)
+{
 	runner.scheduleEvent(1, 1, repast::Schedule::FunctorPtr(new repast::MethodFunctor<AnasaziModel> (this, &AnasaziModel::doPerTick)));
 	runner.scheduleStop(stopAt);
 }
@@ -273,40 +278,36 @@ void AnasaziModel::readcsv2()
 void AnasaziModel::readcsv3()
 {
 	//read "type","start date","end date","x","y"
-	int type, startdate, enddate, x, y;
+	int type, startYear, endYear, x, y;
 	string temp;
-	bool iswater = 0;
-	char zone;
-	Location Location;
 
 	std::ifstream file ("data/water.csv");//define file object and open water.csv
 	file.ignore(500,'\n');//Ignore first line
 	while(1)//read until end of file
 	{
 		getline(file,temp,',');
-		if(!temp.empty())		{
-			getline(file,temp,',');
+		if(!temp.empty())
+		{
 			getline(file,temp,',');
 			getline(file,temp,',');
 			getline(file,temp,',');
 			type = repast::strToInt(temp); //Read until ',' and convert to int
 			getline(file,temp,',');
-			startdate = repast::strToInt(temp); //Read until ',' and convert to int
+			startYear = repast::strToInt(temp); //Read until ',' and convert to int
 			getline(file,temp,',');
-			enddate = repast::strToInt(temp); //Read until ',' and convert to int
+			endYear = repast::strToInt(temp); //Read until ',' and convert to int
 			getline(file,temp,',');
 			x = repast::strToInt(temp); //Read until ',' and convert to int
-			getline(file,temp,',');
+			getline(file,temp,'\n');
 			y = repast::strToInt(temp); //Read until ',' and convert to int
 
-			iswater = Location.getWater(year, zone, type, startdate, enddate, x, y);  //question 1: how to use zone from locationlist?
-			std::vector<Location*> waterList;
-			if (iswater == 1){
-			locationSpace->getObjectsAt(repast::Point<int>(x, y), waterList);  //question 2: how to build a connection between coordinates and waterstate and save them in waterlist?
-			waterList[0]->setZones(x,y);
-			}
-		}			
-		else{
+			std::vector<Location*> locationList;
+			locationSpace->getObjectsAt(repast::Point<int>(x, y), locationList);
+			locationList[0]->addWaterSource(type,startYear, endYear);
+			//locationList[0]->checkWater(existStreams, existAlluvium, x, y, year);
+		}
+		else
+		{
 			goto endloop;
 		}
 	}
@@ -474,5 +475,26 @@ double AnasaziModel::hydroLevel(int zone)
 			return hydro[year-param.startYear].hydroMid;
 		default:
 			return 0;
+	}
+}
+
+void AnasaziModel::checkWaterConditions()
+{
+	if ((year >= 280 && year < 360) or (year >= 800 && year < 930) or (year >= 1300 && year < 1450))
+	{
+		existStreams = true;
+	}
+	else
+	{
+		existStreams = false;
+	}
+
+	if (((year >= 420) && (year < 560)) or ((year >= 630) && (year < 680)) or	((year >= 980) && (year < 1120)) or ((year >= 1180) && (year < 1230)))
+	{
+		existAlluvium = true;
+	}
+	else
+	{
+		existAlluvium = false;
 	}
 }

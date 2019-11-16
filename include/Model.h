@@ -67,6 +67,8 @@ private:
                                   {988,  824, 659, 1030},
                                   {1153, 961, 769, 1201}};
 
+  bool existStreams;
+  bool existAlluvium;
 	repast::Properties* props;
 	repast::SharedContext<Household> context;
   repast::SharedContext<Location> locationcontext;  //Need to confirm this line
@@ -91,6 +93,7 @@ public:
   void readcsv5();
   int yieldFromPDSI(int zone, int maizeZone);
   double hydroLevel(int zone);
+  void checkWaterConditions();
 };
 
 #endif

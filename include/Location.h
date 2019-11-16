@@ -4,6 +4,7 @@
 #include <repast_hpc/AgentId.h>
 #include <repast_hpc/SharedDiscreteSpace.h>
 #include "Location.h"
+#include <vector>
 
 class Location{
 private:
@@ -28,8 +29,19 @@ private:
 		Yield_3		- 4 || Arable Uplands
 		Sand_dune - 5 || Dunes */
 	bool isWater;
+
+	struct WaterSource
+	{
+		int waterType;
+		int startYear;
+		int endYear;
+		bool isWater;
+	};
+	std::vector<WaterSource> waterSources;
+
 	int presentHarvest;
 	int expectedHarvest;
+
 
 public:
 	Location(repast::AgentId FieldID); //for initialisaiton
@@ -37,10 +49,12 @@ public:
 	~Location(); //Deconstructor
 
 	void setZones(int z, int mz);
+	void addWaterSource(int waterType, int startYear, int endYear);
 
 	virtual repast::AgentId& getId() { return LocationID; }
 	virtual const repast::AgentId& getId() const { return LocationID; }
-	bool getWater(int year, char zone, int watertype, int startdate, int enddate, int waterx, int watery);
+
+	void checkWater(bool existStreams, bool existAlluvium, int x, int y, int year);
 	int getExpectedYield();
 	void calculateYield(int y, int q, double Ha);
 	Location* assignField();
