@@ -38,6 +38,7 @@ int main(int argc, char** argv){
   repast::ScheduleRunner& runner = repast::RepastProcess::instance()->getScheduleRunner();
 
   model->initAgents();
+  //test
   //model->initSchedule(runner);
 
   //runner.run();
