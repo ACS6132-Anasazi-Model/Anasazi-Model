@@ -31,6 +31,7 @@ all: clean create_folders compile
 test1:
 	$(MPICXX) $(REPAST_HPC_DEFINES) $(BOOST_INCLUDE) $(REPAST_HPC_INCLUDE) -I./include -c ./tests/test1.cpp -o ./tests/test1.o
 	$(MPICXX) $(BOOST_LIB_DIR) $(REPAST_HPC_LIB_DIR) -o ./tests/test1.exe  ./tests/test1.o $(REPAST_HPC_LIB) $(BOOST_LIBS)
+	g++ -o test1 main.cpp test1.cpp
 
 .PHONY: test2
 test2:
