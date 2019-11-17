@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-//REPLACE a WITH model.listOfHousehold
+//REPLACE list a WITH model.listOfHousehold
 int a[5] = {10,20,30,40,50};
 
 int main(){
