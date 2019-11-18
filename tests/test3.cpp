@@ -4,37 +4,26 @@
 #include <vector>
 #include <boost/mpi.hpp>
 
+#include <string>
+#include <Model.h>
+
+/*
 #include <fstream>
 #include <sstream>
 #include <iostream>
+*/
 
-#include "hydro.csv"
-#include "map.csv"
-#include "pdsi.csv"
-#include "settlement.csv"
-//#include "useful data.xlsx"
-#include "water.csv"
+//int a[2][7] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14};
 
-
+//Prints hydro array from Model.cpp to show archaeological data is in network
 int main(){
-	
-	using namespace std;
-	const int rows = 552;
-	const int cols = 7;
-	
-	int h[552][7] = {};
-	
-	ifstream file("hydro.csv");
-	
-	if (file.is_open()){
-		float r[rows][cols];
-		
-		for (int i = 0; i < rows; i++){
-			for (int j = 0; j < cols; j++){
-				file >> r[i][j];
-				file.get();
-				h[i][j] = r[i][j];
-			}
+
+	for (int i = 0; i < sizeof(hydro)/sizeof(hydro[0]); i++){
+		for (int j = 0; j < sizeof(hydro[0])/sizeof(int); j++){
+		std::cout << a[i][j] << ", ";
 		}
-	}	
+
+		std::cout << std::endl;
+	}
+
 }
