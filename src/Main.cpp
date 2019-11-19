@@ -53,13 +53,36 @@ while(mode!=8){
 	case 1:
 		// run test1
 		{
-		repast::AgentId id(32, 1, 1);
+		int a;
+		int deA;
+		int mstore;
+		int field;
+		repast::AgentId id(32, 12, 21);
 		Household h1(id,1,2,3);
-		//cout << h1.getHouseholdId() << endl;
-		//cout << h1.getAssignedField() << endl;
-		cout << h1.getMaizeStorage()  << endl;
-		cout << h1.getAge()  << endl;
-		cout << h1.getDeathAge()  << endl;
+		cout << h1.getId()  << endl;
+		cout << "Age:" << h1.getAge()  << endl;
+		cout << "Death Age:" << h1.getDeathAge()  << endl;
+		cout << "Maize Storage:"<< h1.getMaizeStorage()  << endl;
+		cout << "Assigned Field:"<<h1.getAssignedField() << endl;
+
+		cout << "Change the age:" << endl;
+		cin >> h1.age();
+
+		cout << "Change the death age:" << endl;
+		cin >> h1.deAge();
+
+		cout << "Change the Maize Storage amount:" << endl;
+		cin >> mstore;
+
+		cout << "Change the Assigned Field:" << endl;
+		cin >> field;
+
+		cout << h1.getId()  << endl;
+		cout << "Age:" << h1.getAge()  << endl;
+		cout << "Death Age:" << h1.getDeathAge()  << endl;
+		cout << "Maize Storage:"<< h1.getMaizeStorage()  << endl;
+		cout << "Assigned Field:"<<h1.getAssignedField() << endl;
+
 		}
 		break;
 	case 2: // run test2
@@ -84,27 +107,13 @@ while(mode!=8){
 	case 7: // run the model
 		{
 
-			std::string configFile = argv[1]; // The name of the configuration file is Arg 1
-			std::string propsFile  = argv[2]; // The name of the properties file is Arg 2
-
-			boost::mpi::environment env(argc, argv);
-			boost::mpi::communicator world;
-
-			repast::RepastProcess::init(configFile);
-
-
-			AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, &world);
 			repast::ScheduleRunner& runner = repast::RepastProcess::instance()->getScheduleRunner();
 
 			model->initAgents();
 			model->initSchedule(runner);
 
 			runner.run();
-			/*
-			delete model;
 
-			repast::RepastProcess::instance()->done();
-			*/
 		}
 		break;
 	case 8: // exit

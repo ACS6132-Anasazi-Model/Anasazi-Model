@@ -34,8 +34,6 @@ public:
 	void chooseField(Location* Field);
 
 	/* Getters for test1 */
-	//AgentId getHouseholdId() { return householdId; }
-	//Location* getAssignedField() { return assignField; }
 	int getMaizeStorage(){ return maizeStorage; }
 	int getAge() { return age; }
 	int getDeathAge() { return deathAge; }
