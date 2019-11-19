@@ -6,11 +6,13 @@
 #include "repast_hpc/Random.h"
 
 
-Household::Household(repast::AgentId id, int deAge) //for init
+Household::Household(repast::AgentId id, int a, int deAge, int mStorage) //for init
 {
   householdId = id;
-  age = 0;
+  age = a;
   deathAge = deAge;
+  maizeStorage = mStorage;
+  assignedField = NULL;
 }
 
 Household::~Household()
@@ -20,20 +22,32 @@ Household::~Household()
 
 /* Getters specific to this kind of Agent */
 
-int Household::checkMaize()
+int Household::splitMaizeStored(int percentage)
 {
-  if(assignedField->getExpectedYield() > 800)
+  int maizeEndowment;
+  maizeEndowment = maizeStorage * percentage;
+  maizeStorage = maizeStorage - maizeEndowment;
+  return maizeEndowment;
+}
+
+bool Household::checkMaize()
+{
+  if((assignedField->getExpectedYield() + maizeStorage) > 800)
   {
-    maizeSatisfied = true;
+    return true;
   }
   else
   {
-    maizeSatisfied = false;
+    return false;
   }
 }
 
 bool Household::death()
 {
+  #ifdef DEBUG
+    cout << "ID:" << householdId.id() << ", Age = " << age << ", Death Age = " << deathAge << endl;
+  #endif
+
   if(age>=deathAge)
   {
       return true;
@@ -44,9 +58,9 @@ bool Household::death()
   }
 }
 
-bool Household::fission(int fissionAge, int gen)
+bool Household::fission(int minFissionAge, int maxFissionAge, double gen)
 {
-  if(age>fissionAge && gen == 0)
+  if(age>=minFissionAge && age<=maxFissionAge && gen >= 0.875)
   {
       return true;
   }
@@ -61,7 +75,7 @@ void Household::nextYear()
   age++;
 }
 
-repast::Point<int> Household::chooseField()
+repast::Point<int> Household::chooseField(std::vector<Location*> locationList)
 {
   return repast::Point<int> (0, 0);
 }

@@ -11,6 +11,10 @@ private:
 	repast::AgentId LocationID;
 	repast::AgentId* householdID;
 	int state;
+	/*
+	0 - empty
+	1 - household
+	2 - field*/
 	int zone;
 	/*Empty 		- 0
 	Natural 		- 1
@@ -39,26 +43,31 @@ private:
 	};
 	std::vector<WaterSource> waterSources;
 
-	int presentHarvest;
+	//int presentHarvest;
 	int expectedHarvest;
+	double soilQuality;
 
 
 public:
-	Location(repast::AgentId FieldID); //for initialisaiton
+	Location(repast::AgentId FieldID, double soilQual); //for initialisaiton
 	Location();
 	~Location(); //Deconstructor
 
 	void setZones(int z, int mz);
+	void setState(int s);
 	void addWaterSource(int waterType, int startYear, int endYear);
 
 	virtual repast::AgentId& getId() { return LocationID; }
 	virtual const repast::AgentId& getId() const { return LocationID; }
+	int getZone(){return zone; }
+	int getMaizeZone(){return maizeZone; }
+	int getExpectedYield();
+	bool getWater(){return isWater; }
+	int getState(){return state; }
 
 	void checkWater(bool existStreams, bool existAlluvium, int x, int y, int year);
-	int getExpectedYield();
-	void calculateYield(int y, int q, double Ha);
+	void calculateYield(int y, double Ha, double gen);
 	Location* assignField();
-
 };
 
 #endif

@@ -7,19 +7,26 @@
 #include "repast_hpc/Random.h"
 #include <vector>
 
-Location::Location(repast::AgentId FieldID){
+Location::Location(repast::AgentId FieldID, double soilQual){
 	LocationID = FieldID;
+	soilQuality = soilQual;
 	isWater = false;
+	state = 0;
 }//for initialisaiton
 
 Location::Location(){
 	isWater = false;
 }
+
 Location::~Location() {}
 
 void Location::setZones(int z, int mz){
 	zone = z;
 	maizeZone = mz;
+}
+
+void Location::setState(int s){
+	state = s;
 }
 
 //get expected field harvest
@@ -28,9 +35,12 @@ int Location::getExpectedYield(){
 }
 
 //calculate harvest of the field
-void Location::calculateYield(int y, int q, double Ha){
+void Location::calculateYield(int y, double Ha, double gen)
+{
   //Need to add formula to calculate expected yield
-    expectedHarvest = y * q * Ha;
+	//y is YieldLevel, Ha is Harvest Adjust and q is soil quality
+	double baseYield = y * soilQuality * Ha;
+  expectedHarvest = baseYield*(1+gen);
 }
 
 void Location::checkWater(bool existStreams, bool existAlluvium, int x, int y, int year)
