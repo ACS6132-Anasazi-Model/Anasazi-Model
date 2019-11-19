@@ -31,7 +31,7 @@ public:
   bool death();
   bool fission(int minFissionAge, int maxFissionAge, double gen);
 	void nextYear();
-	repast::Point<int> chooseField(std::vector<Location*> locationList);
+	void chooseField(Location* Field);
 
 	/* Actions */
 	void move(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space);

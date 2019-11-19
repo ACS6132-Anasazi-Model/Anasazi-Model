@@ -67,7 +67,7 @@ public:
 
 	void checkWater(bool existStreams, bool existAlluvium, int x, int y, int year);
 	void calculateYield(int y, double Ha, double gen);
-	Location* assignField();
+	//Location* assignField(){return this};
 };
 
 #endif

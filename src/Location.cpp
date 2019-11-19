@@ -9,7 +9,7 @@
 
 Location::Location(repast::AgentId FieldID, double soilQual){
 	LocationID = FieldID;
-	soilQuality = soilQual;
+	soilQuality = 1 + soilQual;
 	isWater = false;
 	state = 0;
 }//for initialisaiton

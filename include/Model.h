@@ -8,6 +8,7 @@
 #include "repast_hpc/SharedDiscreteSpace.h"
 #include "repast_hpc/GridComponents.h"
 #include "repast_hpc/Random.h"
+#include <math.h>
 
 #include "Household.h"
 
@@ -80,8 +81,8 @@ private:
   repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace;
   repast::DoubleUniformGenerator fissionGen = repast::Random::instance()->createUniDoubleGenerator(0,1);
   repast::NormalGenerator deathAgeGen = repast::Random::instance()->createNormalGenerator(25,5);
-  repast::NormalGenerator yieldGen = repast::Random::instance()->createNormalGenerator(0,0.1);
-  repast::NormalGenerator soilGen = repast::Random::instance()->createNormalGenerator(0,0.1);
+  repast::NormalGenerator yieldGen = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
+  repast::NormalGenerator soilGen = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
   repast::IntUniformGenerator initAgeGen = repast::Random::instance()->createUniIntGenerator(0,29);
   repast::IntUniformGenerator initMaizeGen = repast::Random::instance()->createUniIntGenerator(1000,1600);
 
@@ -102,6 +103,8 @@ public:
   void OutputFile();
   void updateLocationProperties();
   void updateHouseholdProperties();
+  void fieldSearch(Household* household);
+  void removeHousehold(Household* household);
 };
 
 #endif

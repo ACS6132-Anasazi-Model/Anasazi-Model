@@ -75,9 +75,9 @@ void Household::nextYear()
   age++;
 }
 
-repast::Point<int> Household::chooseField(std::vector<Location*> locationList)
+void Household::chooseField(Location* Field)
 {
-  return repast::Point<int> (0, 0);
+  assignedField = Field;
 }
 
 /* Actions */
