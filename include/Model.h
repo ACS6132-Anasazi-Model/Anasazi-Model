@@ -105,6 +105,8 @@ public:
   void updateHouseholdProperties();
   void fieldSearch(Household* household);
   void removeHousehold(Household* household);
+  //void repast::Properties::putProperty(const std::string&,long double);
+  // Doesn't work
 };
 
 #endif

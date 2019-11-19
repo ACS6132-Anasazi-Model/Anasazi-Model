@@ -33,6 +33,7 @@ int main(int argc, char** argv){
 
 
 	int mode; //	select whether to run test 1-6, run the model or exit
+	int deathAgetest; // set input age value
 
 while(mode!=8){
 	cout << "Select an option:" << endl;
@@ -70,8 +71,12 @@ while(mode!=8){
 	case 4: // run test4
 		cout << "hello 4" << endl;
 		break;
-	case 5: // run test5
-		cout << "hello 5" << endl;
+	case 5: // run test5 not wokring
+		{
+		cout << "set new death age" << endl;
+		cin >> deathAgetest;
+		// repast::Properties::putProperty("max.age",deathAgetest); not working
+		}
 		break;
 	case 6: // run test6
 		model->OutputFile();
@@ -95,13 +100,17 @@ while(mode!=8){
 			model->initSchedule(runner);
 
 			runner.run();
-
+			/*
 			delete model;
 
 			repast::RepastProcess::instance()->done();
+			*/
 		}
 		break;
 	case 8: // exit
+			delete model;
+
+			repast::RepastProcess::instance()->done();
 		cout << "End" << endl;
 		break;
 	}
