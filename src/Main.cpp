@@ -8,6 +8,7 @@
 
 int main(int argc, char** argv){
 
+
 	std::string configFile = argv[1]; // The name of the configuration file is Arg 1
 	std::string propsFile  = argv[2]; // The name of the properties file is Arg 2
 
@@ -17,6 +18,7 @@ int main(int argc, char** argv){
 	repast::RepastProcess::init(configFile);
 
 	AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, &world);
+	/*
 	repast::ScheduleRunner& runner = repast::RepastProcess::instance()->getScheduleRunner();
 
 	model->initAgents();
@@ -27,9 +29,12 @@ int main(int argc, char** argv){
 	delete model;
 
 	repast::RepastProcess::instance()->done();
+	*/
 
-	//	select whether to run test 1-6, run the model or exit
-	int mode;
+
+	int mode; //	select whether to run test 1-6, run the model or exit
+
+while(mode!=8){
 	cout << "Select an option:" << endl;
 	cout << "1. Test 1" << endl;
 	cout << "2. Test 2" << endl;
@@ -48,11 +53,10 @@ int main(int argc, char** argv){
 		// run test1
 		{
 		repast::AgentId id(32, 1, 1);
-		Household h1(id,1);
-		cout << h1.getAge() << endl;
-		cout << h1.getMaizeStorage() << endl;
-		cout << h1.getMaizeSatifieds()  << endl;
-		cout << h1.getHouseholdFission()  << endl;
+		Household h1(id,1,2,3);
+		//cout << h1.getHouseholdId() << endl;
+		//cout << h1.getAssignedField() << endl;
+		cout << h1.getMaizeStorage()  << endl;
 		cout << h1.getAge()  << endl;
 		cout << h1.getDeathAge()  << endl;
 		}
@@ -70,15 +74,38 @@ int main(int argc, char** argv){
 		cout << "hello 5" << endl;
 		break;
 	case 6: // run test6
-		cout << "hello 6" << endl;
+		model->OutputFile();
 		break;
 	case 7: // run the model
-		cout << "7" << endl;
+		{
+
+			std::string configFile = argv[1]; // The name of the configuration file is Arg 1
+			std::string propsFile  = argv[2]; // The name of the properties file is Arg 2
+
+			boost::mpi::environment env(argc, argv);
+			boost::mpi::communicator world;
+
+			repast::RepastProcess::init(configFile);
+
+
+			AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, &world);
+			repast::ScheduleRunner& runner = repast::RepastProcess::instance()->getScheduleRunner();
+
+			model->initAgents();
+			model->initSchedule(runner);
+
+			runner.run();
+
+			delete model;
+
+			repast::RepastProcess::instance()->done();
+		}
 		break;
 	case 8: // exit
-		cout << "8" << endl;
+		cout << "End" << endl;
 		break;
 	}
+}
 
 
 
