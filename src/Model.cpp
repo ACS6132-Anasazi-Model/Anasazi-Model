@@ -16,6 +16,7 @@
 #include <string>
 #include <fstream>
 #include <stdlib.h>
+#include "repast_hpc/Moore2DGridQuery.h"
 
 #include "Model.h"
 
@@ -24,7 +25,9 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	props = new repast::Properties(propsFile, argc, argv, comm);
 	boardSizeX = repast::strToInt(props->getProperty("board.size.x"));
 	boardSizeY = repast::strToInt(props->getProperty("board.size.y"));
+	//randomSeed = repast::strToInt(props->getProperty("random.seed"));
 
+	//repast::Random::instance()->initialize(randomSeed);
 	initializeRandom(*props, comm);
 	repast::Point<double> origin(0,0);
 	repast::Point<double> extent(boardSizeX, boardSizeY);
@@ -46,8 +49,10 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	param.startYear = repast::strToInt(props->getProperty("start.year"));
 	param.endYear = repast::strToInt(props->getProperty("end.year"));
 	param.maxStorageYear = repast::strToInt(props->getProperty("max.store.year"));
+	param.maxStorage = repast::strToInt(props->getProperty("max.storage"));
 	param.householdNeed = repast::strToInt(props->getProperty("household.need"));
-	param.minFissionAge = repast::strToInt(props->getProperty("fission.age"));
+	param.minFissionAge = repast::strToInt(props->getProperty("min.fission.age"));
+	param.maxFissionAge = repast::strToInt(props->getProperty("max.fission.age"));
 	param.maxAge = repast::strToInt(props->getProperty("max.age"));
 	param.mostLikelyDeathAge = repast::strToInt(props->getProperty("most.death.age"));
 	param.maxDistance = repast::strToInt(props->getProperty("max.distance"));
@@ -58,21 +63,31 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	param.spatialVariance = repast::strToDouble(props->getProperty("spatial.variance"));
 	param.fertilityProbability = repast::strToDouble(props->getProperty("fertility.prop"));
 	param.harvestAdjustment = repast::strToDouble(props->getProperty("harvest.adj"));
+	param.maizeStorageRatio = repast::strToDouble(props->getProperty("new.household.ini.maize"));
 
 	year = param.startYear;
 	stopAt = param.endYear - param.startYear + 1;
 
-	repast::DoubleUniformGenerator fissionGen = repast::Random::instance()->createUniDoubleGenerator(0.0,1.0);
-	repast::TriangleGenerator deathAgeGen = repast::Random::instance()->createTriangleGenerator(0.0,double(param.mostLikelyDeathAge),double(param.maxAge));
+	// repast::DoubleUniformGenerator fissionGen = repast::Random::instance()->createUniDoubleGenerator(0,1);
+	// repast::TriangleGenerator deathAgeGen = repast::Random::instance()->createTriangleGenerator(0,param.mostLikelyDeathAge,param.maxAge);
+	// repast::NormalGenerator yieldGen = repast::Random::instance()->createNormalGenerator(0,param.annualVariance);
+	// repast::NormalGenerator soilGen = repast::Random::instance()->createNormalGenerator(0,param.spatialVariance);
+	// repast::IntUniformGenerator initAgeGen = repast::Random::instance()->createUniIntGenerator(0,29);
+	// repast::IntUniformGenerator initMaizeGen = repast::Random::instance()->createUniIntGenerator(param.initMinCorn,param.initMaxCorn);
+
+	out.open("NumberOfHousehold.csv");
+	out << "Year, Number of Households" << endl;
 }
 
 AnasaziModel::~AnasaziModel()
 {
 	delete props;
+	out.close();
 }
 
 void AnasaziModel::initAgents()
 {
+
 	std::cout << "Initializing Model\n";
 	int rank = repast::RepastProcess::instance()->rank();
 
@@ -82,34 +97,61 @@ void AnasaziModel::initAgents()
 		for(int j=0; j<boardSizeY; j++)
 		{
 			repast::AgentId id(LocationID, rank, 1);
-			Location* agent = new Location(id);
+			Location* agent = new Location(id, soilGen.next());
 			locationcontext.addAgent(agent);
 			locationSpace->moveTo(id, repast::Point<int>(i, j));
 			LocationID++;
 		}
 	}
-	checkWaterConditions();
+
 	readcsv1();
 	readcsv2();
 	readcsv3();
 	readcsv4();
 	readcsv5();
-	// std::vector<Location*> locationList;
-	// locationSpace->getObjectsAt(repast::Point<int>(50, 50), locationList);
-	// cout<< locationList[0]->getId().id() << "\n";
+	//updateHouseholdProperties();
+	updateLocationProperties();
+
+	repast::SharedContext<Household>::const_iterator local_agents_iter = context.begin();
+	repast::SharedContext<Household>::const_iterator local_agents_end = context.end();
+
+	while(local_agents_iter != local_agents_end)
+	{
+		Household* household = (&**local_agents_iter);
+		if(household->death())
+		{
+			repast::AgentId id = household->getId();
+			local_agents_iter++;
+
+			std::vector<int> loc;
+			householdSpace->getLocation(id, loc);
+
+			std::vector<Location*> locationList;
+			if(!loc.empty())
+			{
+				locationSpace->getObjectsAt(repast::Point<int>(loc[0], loc[1]), locationList);
+				locationList[0]->setState(0);
+			}
+			context.removeAgent(id);
+			//repast::RepastProcess::instance()->agentRemoved(id);
+		}
+		else
+		{
+			fieldSearch(household);
+			local_agents_iter++;
+		}
+	}
 }
 
 void AnasaziModel::doPerTick()
 {
-	//std::cout << "Year " << year << "\n";
-	// int a, z , mz;
-	// cin >> a;
-	// cout << hydroLevel(a) << endl;
-	//
-	// cin >> z;
-	// cin >> mz;
-	// cout << yieldFromPDSI(z,mz)<<endl;
-	++year;
+	updateLocationProperties();
+	OutputFile();
+	#ifdef DEBUG
+		std::cout << "Year " << year << "\n";
+	#endif
+	year++;
+	updateHouseholdProperties();
 }
 
 void AnasaziModel::initSchedule(repast::ScheduleRunner& runner)
@@ -117,10 +159,6 @@ void AnasaziModel::initSchedule(repast::ScheduleRunner& runner)
 	runner.scheduleEvent(1, 1, repast::Schedule::FunctorPtr(new repast::MethodFunctor<AnasaziModel> (this, &AnasaziModel::doPerTick)));
 	runner.scheduleStop(stopAt);
 }
-
-bool AnasaziModel::fissionHousehold(){};
-bool AnasaziModel::removeHousehold(){};
-int AnasaziModel::countHousehold(){};
 
 void AnasaziModel::readcsv1()
 {
@@ -139,9 +177,10 @@ void AnasaziModel::readcsv1()
 			x = repast::strToInt(temp); //Read until ',' and convert to int & store in x
 			getline(file,temp,',');
 			y = repast::strToInt(temp); //Read until ',' and convert to int & store in y
-			getline(file,temp,','); //skip data
+			getline(file,temp,','); //colour
 			getline(file,zone,',');// read until ',' and store into zone
 			getline(file,maizeZone,'\n');// read until next line and store into maizeZone
+			//cout << zone << "," << maizeZone << endl;
 			if(zone == "\"Empty\"")
 			{
 				z = 0;
@@ -184,34 +223,34 @@ void AnasaziModel::readcsv1()
 				std::cout << zone << std::endl;
 			}
 
-			if(maizeZone == "\"Empty\"")
+			if(maizeZone.find("Empty") != std::string::npos)
 			{
 				mz = 0;
 			}
-			else if(maizeZone == "\"No_Yield\"")
+			else if(maizeZone.find("No_Yield") != std::string::npos)
 			{
 				mz = 1;
 			}
-			else if(maizeZone == "\"Yield_1\"")
+			else if(maizeZone.find("Yield_1") != std::string::npos)
 			{
 				mz = 2;
 			}
-			else if(maizeZone == "\"Yield_2\"")
+			else if(maizeZone.find("Yield_2") != std::string::npos)
 			{
 				mz = 3;
 			}
-			else if(maizeZone == "\"Yield_3\"")
+			else if(maizeZone.find("Yield_3") != std::string::npos)
 			{
 				mz = 4;
 			}
-			else if(maizeZone == "\"Sand_dune\"")
+			else if(maizeZone.find("Sand_dune") != std::string::npos)
 			{
 				mz = 5;
 			}
 			else
 			{
 				mz = 99;
-				//std::cout << maizeZone << std::endl;
+				std::cout << maizeZone << std::endl;
 			}
 			std::vector<Location*> locationList;
 			locationSpace->getObjectsAt(repast::Point<int>(x, y), locationList);
@@ -227,6 +266,7 @@ void AnasaziModel::readcsv1()
 
 void AnasaziModel::readcsv2()
 {
+
 	//read "start date","end date","median date","baseline households","x","y"
 	int startdate, enddate, baselinehouseholds, x, y;
 	string temp;
@@ -258,13 +298,21 @@ void AnasaziModel::readcsv2()
 			y = repast::strToInt(temp); //Read until ',' and convert to int
 			if(startdate<=800 && enddate >800)
 			{
-				repast::AgentId id(houseID, rank, 1);
-				int deathAge = deathAgeGen.next();
-				Household* agent = new Household(id, deathAge);
+				repast::AgentId id(houseID, rank, 2);
+				int initAge = initAgeGen.next();
+				int mStorage = initMaizeGen.next();
+				Household* agent = new Household(id, initAge, deathAgeGen.next(), mStorage);
 				context.addAgent(agent);
 				householdSpace->moveTo(id, repast::Point<int>(x, y));
+
+				std::vector<Location*> locationList;
+				locationSpace->getObjectsAt(repast::Point<int>(x, y), locationList);
+				locationList[0]->setState(1);
+
 				houseID++;
-				std::cout << id.id() << ", x= " << x << ", y= " << y << std::endl;
+				#ifdef DEBUG
+					std::cout << id.id() << ", x= " << x << ", y= " << y << ", Age= " << initAge << ", mStorage=" << mStorage << std::endl;
+				#endif
 			}
 		}
 		else
@@ -497,4 +545,141 @@ void AnasaziModel::checkWaterConditions()
 	{
 		existAlluvium = false;
 	}
+}
+
+void AnasaziModel::OutputFile()
+{
+	out << year << ", " <<  context.size() << std::endl;
+}
+
+void  AnasaziModel::updateLocationProperties()
+{
+	checkWaterConditions();
+	int x = 0;
+	for(int i=0; i<boardSizeX; i++ )
+	{
+		for(int j=0; j<boardSizeY; j++)
+		{
+			std::vector<Location*> locationList;
+			locationSpace->getObjectsAt(repast::Point<int>(i, j), locationList);
+			locationList[0]->checkWater(existStreams,existAlluvium, i, j, year);
+			int mz = locationList[0]->getMaizeZone();
+			int z = locationList[0]->getZone();
+			int y = yieldFromPDSI(z,mz);
+			locationList[0]->calculateYield(y, param.harvestAdjustment, yieldGen.next());
+		}
+	}
+}
+
+void AnasaziModel::updateHouseholdProperties()
+{
+	repast::SharedContext<Household>::const_iterator local_agents_iter = context.begin();
+	repast::SharedContext<Household>::const_iterator local_agents_end = context.end();
+
+	while(local_agents_iter != local_agents_end)
+	{
+		Household* household = (&**local_agents_iter);
+		if(household->death())
+		{
+			local_agents_iter++;
+			removeHousehold(household);
+		}
+		else
+		{
+			if(household->fission(param.minFissionAge,param.maxFissionAge, fissionGen.next()))
+			{
+				int rank = repast::RepastProcess::instance()->rank();
+				repast::AgentId id(houseID, rank, 2);
+				int mStorage = household->splitMaizeStored(param.maizeStorageRatio);
+				Household* newAgent = new Household(id, 0, deathAgeGen.next(), mStorage);
+				context.addAgent(newAgent);
+
+				std::vector<int> loc;
+				householdSpace->getLocation(household->getId(), loc);
+				householdSpace->moveTo(id, repast::Point<int>(loc[0], loc[1]));
+				fieldSearch(newAgent);
+				houseID++;
+			}
+			household->nextYear();
+			cout << "Expected Yield = " << household->getAssignedField()->getExpectedYield() << endl;
+			local_agents_iter++;
+		}
+	}
+
+	/******************* Moving Location and Field ***********************/
+	//
+	// local_agents_iter = context.begin();
+	// local_agents_end = context.end();
+	//
+	// while(local_agents_iter != local_agents_end)
+	// {
+	// 	Household* household = (&**local_agents_iter);
+	// 	if(household->getAssignedField() != NULL)
+	// 	{
+	// 		//Check if maize is enough
+	// 		//If not enough, goto ChooseField;
+	// 	}
+	// 	else
+	// 	{
+	// 		ChooseField: ;
+	//
+	// 	}
+	// }
+}
+
+void AnasaziModel::fieldSearch(Household* household)
+{
+	/******** Choose Field ********/
+	std::vector<int> loc;
+	householdSpace->getLocation(household->getId(), loc);
+	repast::Point<int> center(loc);
+
+	std::vector<Location*> neighbouringLocations;
+	//std::vector<Location*> checkedLocations;
+	repast::Moore2DGridQuery<Location> moore2DQuery(locationSpace);
+	int range = 1;
+	while(1)
+	{
+		moore2DQuery.query(loc, range, false, neighbouringLocations);
+		// for(std::vector<Location>::iterator it = checkedLocations.begin() ; it != checkedLocations.end(); ++it)
+		// {
+		// 	neighbouringLocations.erase(std::remove(neighbouringLocations.begin(), neighbouringLocations.end(),(&*it)),neighbouringLocations.end());
+		// }
+
+		for (std::vector<Location*>::iterator it = neighbouringLocations.begin() ; it != neighbouringLocations.end(); ++it)
+		{
+			Location* tempLoc = (&**it);
+			//cout << "Yield = " << tempLoc->getExpectedYield() << endl;
+			if(tempLoc->getState() == 0)
+			{
+				if(tempLoc->getExpectedYield() >= 800)
+				{
+					std::vector<int> loc;
+					locationSpace->getLocation(tempLoc->getId(), loc);
+					cout << "Found a field (" << loc[0] << "," << loc[1] << "), yield = " << tempLoc->getExpectedYield() << endl;
+					tempLoc->setState(2);
+					household->chooseField(tempLoc);
+					return;
+				}
+			}
+		}
+		range++;
+	}
+}
+
+void AnasaziModel::removeHousehold(Household* household)
+{
+	repast::AgentId id = household->getId();
+
+	std::vector<int> loc;
+	householdSpace->getLocation(id, loc);
+
+	std::vector<Location*> locationList;
+	if(!loc.empty())
+	{
+		locationSpace->getObjectsAt(repast::Point<int>(loc[0], loc[1]), locationList);
+		locationList[0]->setState(0);
+	}
+	context.removeAgent(id);
+	//repast::RepastProcess::instance()->agentRemoved(id);
 }

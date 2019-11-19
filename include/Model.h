@@ -8,6 +8,7 @@
 #include "repast_hpc/SharedDiscreteSpace.h"
 #include "repast_hpc/GridComponents.h"
 #include "repast_hpc/Random.h"
+#include <math.h>
 
 #include "Household.h"
 
@@ -21,13 +22,16 @@ private:
   int randomSeed;
   int houseID = 0;
   //std::vector<Household> listOfHousehold;
+  std::ofstream out;
   struct Parameters
   {
     int startYear;
     int endYear;
     int maxStorageYear;
+    int maxStorage;
     int householdNeed;
     int minFissionAge;
+    int maxFissionAge;
     int maxAge;
     int mostLikelyDeathAge;
     int maxDistance;
@@ -37,6 +41,7 @@ private:
     double spatialVariance;
     double fertilityProbability;
     double harvestAdjustment;
+    double maizeStorageRatio;
   } param;
 
   struct PDSI
@@ -75,7 +80,11 @@ private:
 	repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* householdSpace;
   repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace;
   repast::DoubleUniformGenerator fissionGen = repast::Random::instance()->createUniDoubleGenerator(0,1);
-  repast::TriangleGenerator deathAgeGen = repast::Random::instance()->createTriangleGenerator(0,1,2);
+  repast::NormalGenerator deathAgeGen = repast::Random::instance()->createNormalGenerator(25,5);
+  repast::NormalGenerator yieldGen = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
+  repast::NormalGenerator soilGen = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
+  repast::IntUniformGenerator initAgeGen = repast::Random::instance()->createUniIntGenerator(0,29);
+  repast::IntUniformGenerator initMaizeGen = repast::Random::instance()->createUniIntGenerator(1000,1600);
 
 public:
 	AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm);
@@ -83,9 +92,6 @@ public:
 	void initAgents();
 	void initSchedule(repast::ScheduleRunner& runner);
 	void doPerTick();
-  bool fissionHousehold();
-  bool removeHousehold();
-  int countHousehold();
   void readcsv1();
   void readcsv2();
   void readcsv3();
@@ -94,6 +100,11 @@ public:
   int yieldFromPDSI(int zone, int maizeZone);
   double hydroLevel(int zone);
   void checkWaterConditions();
+  void OutputFile();
+  void updateLocationProperties();
+  void updateHouseholdProperties();
+  void fieldSearch(Household* household);
+  void removeHousehold(Household* household);
 };
 
 #endif
