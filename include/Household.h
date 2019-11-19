@@ -32,6 +32,16 @@ public:
 	void nextYear();
 	repast::Point<int> chooseField();
 
+	/* Getters for test1 */
+	//AgentId getHouseholdId();
+	//Location* getAssignedField();
+	int getMaizeStorage(){ return maizeStorge; }
+	bool getMaizeSatifieds() { return maizeSatisfied; }
+	bool getHouseholdFission() {return householdFission; }
+	int getAge() { return age; }
+	int getDeathAge() { return deathAge; }
+
+
 	/* Actions */
 	void move(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space);
 };

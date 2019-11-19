@@ -66,6 +66,14 @@ repast::Point<int> Household::chooseField()
   return repast::Point<int> (0, 0);
 }
 
+/* Getters for test1 */
+
+//repast::AgentId Household::getHouseholdId();
+//Location* Household::getAssignedField();
+
+
+
+
 /* Actions */
 void move(repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* space)
 {
