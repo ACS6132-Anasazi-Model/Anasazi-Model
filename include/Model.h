@@ -103,8 +103,9 @@ public:
   void OutputFile();
   void updateLocationProperties();
   void updateHouseholdProperties();
-  void fieldSearch(Household* household);
+  bool fieldSearch(Household* household);
   void removeHousehold(Household* household);
+  bool relocateHousehold(Household* household);
 };
 
 #endif
