@@ -600,31 +600,16 @@ void AnasaziModel::updateHouseholdProperties()
 				fieldSearch(newAgent);
 				houseID++;
 			}
+			if(!(household->checkMaize()))
+			{
+				//cout << "I need a new field" << endl;
+				fieldSearch(household);
+			}
 			household->nextYear();
 			cout << "Expected Yield = " << household->getAssignedField()->getExpectedYield() << endl;
 			local_agents_iter++;
 		}
 	}
-
-	/******************* Moving Location and Field ***********************/
-	//
-	// local_agents_iter = context.begin();
-	// local_agents_end = context.end();
-	//
-	// while(local_agents_iter != local_agents_end)
-	// {
-	// 	Household* household = (&**local_agents_iter);
-	// 	if(household->getAssignedField() != NULL)
-	// 	{
-	// 		//Check if maize is enough
-	// 		//If not enough, goto ChooseField;
-	// 	}
-	// 	else
-	// 	{
-	// 		ChooseField: ;
-	//
-	// 	}
-	// }
 }
 
 void AnasaziModel::fieldSearch(Household* household)
@@ -659,11 +644,16 @@ void AnasaziModel::fieldSearch(Household* household)
 					cout << "Found a field (" << loc[0] << "," << loc[1] << "), yield = " << tempLoc->getExpectedYield() << endl;
 					tempLoc->setState(2);
 					household->chooseField(tempLoc);
-					return;
+					goto EndOfLoop;
 				}
 			}
 		}
 		range++;
+	}
+	EndOfLoop:
+	if(range >= 10)
+	{
+		//relocateHousehold(household);
 	}
 }
 
@@ -675,10 +665,15 @@ void AnasaziModel::removeHousehold(Household* household)
 	householdSpace->getLocation(id, loc);
 
 	std::vector<Location*> locationList;
+	std::vector<Household*> householdList;
 	if(!loc.empty())
 	{
 		locationSpace->getObjectsAt(repast::Point<int>(loc[0], loc[1]), locationList);
-		locationList[0]->setState(0);
+		householdSpace->getObjectsAt(repast::Point<int>(loc[0], loc[1]), householdList);
+		if(householdList.size() == 1)
+		{
+			locationList[0]->setState(0);
+		}
 	}
 	context.removeAgent(id);
 	//repast::RepastProcess::instance()->agentRemoved(id);
