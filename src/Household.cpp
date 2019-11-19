@@ -73,6 +73,7 @@ bool Household::fission(int minFissionAge, int maxFissionAge, double gen)
 void Household::nextYear()
 {
   age++;
+  maizeStorage = assignedField->getExpectedYield() + maizeStorage - 800;
 }
 
 void Household::chooseField(Location* Field)
