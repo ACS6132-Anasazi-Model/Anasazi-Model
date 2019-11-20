@@ -9,7 +9,7 @@
 class Location{
 private:
 	repast::AgentId LocationID;
-	repast::AgentId* householdID;
+	//repast::AgentId* householdID;
 	int state;
 	/*
 	0 - empty
