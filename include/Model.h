@@ -79,12 +79,13 @@ private:
   repast::SharedContext<Location> locationcontext;  //Need to confirm this line
 	repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* householdSpace;
   repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace;
-  repast::DoubleUniformGenerator fissionGen = repast::Random::instance()->createUniDoubleGenerator(0,1);
-  repast::NormalGenerator deathAgeGen = repast::Random::instance()->createNormalGenerator(25,5);
-  repast::NormalGenerator yieldGen = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
-  repast::NormalGenerator soilGen = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
-  repast::IntUniformGenerator initAgeGen = repast::Random::instance()->createUniIntGenerator(0,29);
-  repast::IntUniformGenerator initMaizeGen = repast::Random::instance()->createUniIntGenerator(1000,1600);
+  repast::DoubleUniformGenerator* fissionGen;// = repast::Random::instance()->createUniDoubleGenerator(0,1);
+  repast::TriangleGenerator* deathAgeGen;// = repast::Random::instance()->createNormalGenerator(25,5);
+  repast::NormalGenerator* yieldGen;// = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
+  repast::NormalGenerator* soilGen;// = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
+  repast::IntUniformGenerator* initAgeGen;// = repast::Random::instance()->createUniIntGenerator(0,29);
+  repast::IntUniformGenerator* initMaizeGen;// = repast::Random::instance()->createUniIntGenerator(1000,1600);
+
 
 public:
 	AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm);

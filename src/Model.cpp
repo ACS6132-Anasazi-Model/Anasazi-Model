@@ -19,8 +19,14 @@
 #include "repast_hpc/Moore2DGridQuery.h"
 
 #include "Model.h"
+repast::DoubleUniformGenerator* fissionGen;
+extern repast::TriangleGenerator deathAgeGen;
+extern repast::NormalGenerator yieldGen;
+extern repast::NormalGenerator soilGen;
+extern repast::IntUniformGenerator initAgeGen;
+extern repast::IntUniformGenerator initMaizeGen;
 
-AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm), locationcontext(comm)
+AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm) , locationcontext(comm)
 {
 	props = new repast::Properties(propsFile, argc, argv, comm);
 	boardSizeX = repast::strToInt(props->getProperty("board.size.x"));
@@ -67,13 +73,14 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 
 	year = param.startYear;
 	stopAt = param.endYear - param.startYear + 1;
-
-	// repast::DoubleUniformGenerator fissionGen = repast::Random::instance()->createUniDoubleGenerator(0,1);
-	// repast::TriangleGenerator deathAgeGen = repast::Random::instance()->createTriangleGenerator(0,param.mostLikelyDeathAge,param.maxAge);
-	// repast::NormalGenerator yieldGen = repast::Random::instance()->createNormalGenerator(0,param.annualVariance);
-	// repast::NormalGenerator soilGen = repast::Random::instance()->createNormalGenerator(0,param.spatialVariance);
-	// repast::IntUniformGenerator initAgeGen = repast::Random::instance()->createUniIntGenerator(0,29);
-	// repast::IntUniformGenerator initMaizeGen = repast::Random::instance()->createUniIntGenerator(param.initMinCorn,param.initMaxCorn);
+	std::string String1 = "fissionGen";
+	fissionGen = new repast::DoubleUniformGenerator(repast::Random::instance()->createUniDoubleGenerator(0,1));
+	//repast::DoubleUniformGenerator fissionGen = fissionGenDup;
+	deathAgeGen = new repast::TriangleGenerator(repast::Random::instance()->createTriangleGenerator(0,param.mostLikelyDeathAge,param.maxAge));
+	yieldGen = new repast::NormalGenerator(repast::Random::instance()->createNormalGenerator(0,param.annualVariance));
+	soilGen = new repast::NormalGenerator(repast::Random::instance()->createNormalGenerator(0,param.spatialVariance));
+	initAgeGen = new repast::IntUniformGenerator(repast::Random::instance()->createUniIntGenerator(0,29));
+	initMaizeGen = new repast::IntUniformGenerator(repast::Random::instance()->createUniIntGenerator(param.initMinCorn,param.initMaxCorn));
 
 	out.open("NumberOfHousehold.csv");
 	out << "Year, Number of Households" << endl;
@@ -97,7 +104,7 @@ void AnasaziModel::initAgents()
 		for(int j=0; j<boardSizeY; j++)
 		{
 			repast::AgentId id(LocationID, rank, 1);
-			Location* agent = new Location(id, soilGen.next());
+			Location* agent = new Location(id, soilGen->next());
 			locationcontext.addAgent(agent);
 			locationSpace->moveTo(id, repast::Point<int>(i, j));
 			LocationID++;
@@ -299,9 +306,9 @@ void AnasaziModel::readcsv2()
 			if(startdate<=800 && enddate >800)
 			{
 				repast::AgentId id(houseID, rank, 2);
-				int initAge = initAgeGen.next();
-				int mStorage = initMaizeGen.next();
-				Household* agent = new Household(id, initAge, deathAgeGen.next(), mStorage);
+				int initAge = initAgeGen->next();
+				int mStorage = initMaizeGen->next();
+				Household* agent = new Household(id, initAge, deathAgeGen->next(), mStorage);
 				context.addAgent(agent);
 				householdSpace->moveTo(id, repast::Point<int>(x, y));
 
@@ -566,7 +573,7 @@ void  AnasaziModel::updateLocationProperties()
 			int mz = locationList[0]->getMaizeZone();
 			int z = locationList[0]->getZone();
 			int y = yieldFromPDSI(z,mz);
-			locationList[0]->calculateYield(y, param.harvestAdjustment, yieldGen.next());
+			locationList[0]->calculateYield(y, param.harvestAdjustment, yieldGen->next());
 		}
 	}
 }
@@ -587,12 +594,12 @@ void AnasaziModel::updateHouseholdProperties()
 		else
 		{
 			local_agents_iter++;
-			if(household->fission(param.minFissionAge,param.maxFissionAge, fissionGen.next()))
+			if(household->fission(param.minFissionAge,param.maxFissionAge, fissionGen->next()))
 			{
 				int rank = repast::RepastProcess::instance()->rank();
 				repast::AgentId id(houseID, rank, 2);
 				int mStorage = household->splitMaizeStored(param.maizeStorageRatio);
-				Household* newAgent = new Household(id, 0, deathAgeGen.next(), mStorage);
+				Household* newAgent = new Household(id, 0, deathAgeGen->next(), mStorage);
 				context.addAgent(newAgent);
 
 				std::vector<int> loc;
