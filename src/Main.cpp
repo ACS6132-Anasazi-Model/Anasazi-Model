@@ -58,19 +58,65 @@ while(mode!=7){
 	case 1:
 		// run test1
 		{
+
+		int b;
+		int c;
+		int d;
+		double soil = 0;
+		int yield;
+		double harvestAdjustment;
+		double randomNum =0;
+
 		cout << "Pick agent:" << endl;
 		cin >> pseudoID;
 		repast::AgentId id(pseudoID, 0, 0);
-		Household h1(id,0,0,0);
-		cout << h1.getId()  << endl;
-		cout << "Age:" << h1.getAge()  << endl;
-		cout << "Death Age:" << h1.getDeathAge()  << endl;
-		cout << "Maize Storage:" << h1.getMaizeStorage()  << endl;
-		cout << "Assigned Field:" << h1.getAssignedField() << endl;
+		Household* h1;
+		cout << "Soil quality and randomNum set to 0:"<<endl;
+		cout << "Enter Age:"<<endl;
+		cin >> b;
+		cout << "Enter Death Age:"<<endl;
+		cin >> c;
+		cout << "Enter Maize Storage:"<<endl;
+		cin >> d;
+		h1 = new Household(id,b,c,d);
+		cout << "Enter maize yield for field:"<<endl;
+		cin >> yield;
+		cout << "Enter Harvest Adjustment (between 0 and 1):"<<endl;
+		cin >> harvestAdjustment;
+		int totalMaize = yield * harvestAdjustment + h1->getMaizeStorage() -800;
+		cout << "Expected Maize storage:" << totalMaize << endl;
+
+		cout << h1 -> getId() << endl;
+		cout << "Age:" << h1->getAge()  << endl;
+		cout << "Death Age:" << h1->getDeathAge()  << endl;
+		cout << "Maize Storage:" << h1->getMaizeStorage()  << endl;
+		//cout << "Assigned Field:" << h1.getAssignedField() << endl;
+		Location L1(id, soil);
+		L1.calculateYield(yield,harvestAdjustment,randomNum);
+		h1 ->chooseField( &L1 );
+		cout << "Moving to next year" << endl;
+		h1 ->nextYear();
+		cout << "Maize Storage:" << h1->getMaizeStorage()  << endl;
+
+		if(h1->getMaizeStorage()==totalMaize)
+		{
+			cout << "\033[1;32mTest Passed\033[0m\n";
+		}
+		else
+		{
+			cout << "\033[1;31mTest Failed\033[0m\n";
+		}
+
+
+		// run something
+
+
+		//print out again
+
 		}
 		break;
 	case 2: // run test2
-		cout << "Hello2" << endl;
+		cout << "Good Morning" << endl;
 		break;
 	case 3: // run test3
 		// compare the archaelogical data from water csv
