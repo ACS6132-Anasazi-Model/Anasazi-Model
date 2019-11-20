@@ -807,6 +807,73 @@ bool AnasaziModel::relocateHousehold(Household* household)
 	// find distance
 	// choose closest
 }
+void AnasaziModel::test2(boost::mpi::communicator* comm){
+
+				Household* h1;
+				int pseudoID=0;
+				int boardSizeX;
+				int boardSizeY;
+				cout << "Select Board Size x:" << endl;
+				cin >> boardSizeX;
+				cout << "Select Board Size y:" << endl;
+				cin >> boardSizeY;
+				repast::Point<double> origin(0,0);
+				repast::Point<double> extent(boardSizeX, boardSizeY);
+				repast::GridDimensions gd (origin, extent);
+
+
+				std::vector<int> processDims;
+				processDims.push_back(1);
+				processDims.push_back(1);
+				householdSpace = new repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >("AgentDiscreteSpaceTest",gd,processDims,0, comm);
+				locationSpace = new repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >("LocationDiscreteSpaceTest",gd,processDims,0, comm);
+
+				context.addProjection(householdSpace);
+				locationcontext.addProjection(locationSpace);
+
+				int b, c, d, i=0,j=0;
+				int x, y, n=0;
+				double soil = 0;
+				int yield;
+				double harvestAdjustment;
+				double randomNum =0;
+
+				cout<<"Set number of agents:"<< endl;
+				cin >> n;
+				while(i<n){
+				cout << "Pick agent:" << endl;
+				cin >> pseudoID;
+				repast::AgentId id(pseudoID, 0, 0);
+				Household* h[i];
+				cout << "Enter Age:"<<endl;
+				cin >> b;
+				cout << "Enter Death Age:"<<endl;
+				cin >> c;
+				cout << "Enter Maize Storage:"<<endl;
+				cin >> d;
+				h[i] = new Household(id,b,c,d);
+				context.addAgent(h[i]);
+				cout << "Pick x coordinate to put agent:" << endl;
+				cin >> x;
+				cout << "Pick y coordinate to put agent:" << endl;
+				cin >> y;
+				householdSpace ->moveTo(id, repast::Point<int>(x,y));
+				i++;
+				}
+				while(j<n){
+				Location L[j](id, 0);
+				h[j] ->chooseField( &L[j] );
+				}
+				householdSpace -> getLocation(id,loc);
+				locationSpace -> getObjectsAt(repast::Point<int>(loc[0],loc[1]),locationList);
+
+
+
+
+
+
+
+}
 
 void AnasaziModel::test3(){
 	int x,y,i;

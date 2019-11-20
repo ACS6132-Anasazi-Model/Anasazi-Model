@@ -114,8 +114,15 @@ while(mode!=7){
 
 		}
 		break;
-	case 2: // run test2
-		cout << "Goof" << endl;
+	case 2:  // run test2
+		{
+			repast::RepastProcess::init(configFile);
+			world = new boost::mpi::communicator;
+			AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, world);
+			model->test2(world);
+			delete model;
+			repast::RepastProcess::instance()->done();
+		}
 		break;
 	case 3: // run test3
 		// compare the archaelogical data from water csv
@@ -196,9 +203,11 @@ while(mode!=7){
 			runner.run();
 			delete model;
 			repast::RepastProcess::instance()->done();
+
 		}
 		break;
 	case 7: // exit
+
 		cout << "End" << endl;
 		break;
 	}

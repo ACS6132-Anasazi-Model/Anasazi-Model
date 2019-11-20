@@ -106,6 +106,7 @@ public:
   bool fieldSearch(Household* household);
   void removeHousehold(Household* household);
   bool relocateHousehold(Household* household);
+  void test2(boost::mpi::communicator* comm);
   void test3();
 };
 
