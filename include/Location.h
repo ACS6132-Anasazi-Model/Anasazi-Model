@@ -67,6 +67,17 @@ public:
 
 	void checkWater(bool existStreams, bool existAlluvium, int x, int y, int year);
 	void calculateYield(int y, double Ha, double gen);
+	void printproperties(){
+	cout << "zone:" << zone << endl;
+	cout << "maizeZone:" << maizeZone << endl;
+	cout << "State:" << state << endl;
+	for(int i =0; i < waterSources.size(); i++)
+	{
+	cout << "watertype:" << waterSources[i].waterType << endl;
+	cout << "startYear:" << waterSources[i].startYear << endl;
+	cout << "endYear:" << waterSources[i].endYear << endl;
+	}
+	};
 	//Location* assignField(){return this};
 };
 

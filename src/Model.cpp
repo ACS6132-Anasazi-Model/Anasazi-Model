@@ -604,7 +604,7 @@ void AnasaziModel::updateHouseholdProperties()
 				std::vector<int> loc;
 				householdSpace->getLocation(household->getId(), loc);
 				householdSpace->moveTo(id, repast::Point<int>(loc[0], loc[1]));
-				cout << "\033[1;32mA new household " << id.id() << " is born\033[0m\n";
+				cout << "\033[1;33mA new household " << id.id() << " is born\033[0m\n";
 				fieldSearch(newAgent);
 				houseID++;
 			}
@@ -775,7 +775,7 @@ bool AnasaziModel::relocateHousehold(Household* household)
 			std::vector<int> loc2;
 			locationSpace->getLocation(suitableLocations[0]->getId(),loc2);
 			householdSpace->moveTo(household->getId(),repast::Point<int>(loc2[0], loc2[1]));
-			cout << "1 location available\nHouse moved to (" << loc2[0] << "," << loc2[1] << ")\n";
+			cout << "\033[1;32m1 location available\nHouse moved to (" << loc2[0] << "," << loc2[1] << ")\033[0\n";
 			return true;
 		}
 		else
@@ -797,7 +797,7 @@ bool AnasaziModel::relocateHousehold(Household* household)
 			std::vector<int> loc2;
 			locationSpace->getLocation(suitableLocations[minElementIndex]->getId(),loc2);
 			householdSpace->moveTo(household->getId(),repast::Point<int>(loc2[0], loc2[1]));
-			cout << "Multiple locations available\nHouse moved to (" << loc2[0] << "," << loc2[1] << ")\n";
+			cout << "\033[1;32mMultiple locations available\nHouse moved to (" << loc2[0] << "," << loc2[1] << ")\033[0\n";
 			return true;
 		}
 	// get all water sources in the range
@@ -821,7 +821,7 @@ void AnasaziModel::test3(){
 	cout << "pdsiMid:" << pdsi[i].pdsiMid << endl;
 	cout << "pdsiNatural:" << pdsi[i].pdsiNatural << endl;
 	cout << "pdsiUpland:" << pdsi[i].pdsiUpland << endl;
-	cout << "pdsiKinbiko:" << pdsi[i].pdsiKinbiko << endl;	
+	cout << "pdsiKinbiko:" << pdsi[i].pdsiKinbiko << endl;
 	cout << "hydroGeneral:" << hydro[i].hydroGeneral << endl;
 	cout << "hydroNorth:" << hydro[i].hydroNorth << endl;
 	cout << "hydroMid:" << hydro[i].hydroMid << endl;

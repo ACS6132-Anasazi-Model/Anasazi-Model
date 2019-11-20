@@ -121,11 +121,12 @@ while(mode!=7){
 		// compare the archaelogical data from water csv
 
 		{
+			AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, &world);
 			model->initAgents();
 			model->test3();
 		}
 		cout << "hello 3" << endl;
-		
+
 		break;
 	case 4: // run test4
 	{
