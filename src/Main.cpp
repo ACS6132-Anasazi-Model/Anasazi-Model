@@ -34,17 +34,22 @@ int main(int argc, char** argv){
 
 	int mode; //	select whether to run test 1-6, run the model or exit
 	int deathAgetest; // set input age value
+	int maizeYI; // set maize yield index
+	int pseudoID=0;
+	int i=0;
 
-while(mode!=8){
+	//repast::AgentId id(pseudoID, 0, 0);
+	//Household h1(id,0,0,0);
+
+while(mode!=7){
 	cout << "Select an option:" << endl;
 	cout << "1. Test 1" << endl;
 	cout << "2. Test 2" << endl;
 	cout << "3. Test 3" << endl;
 	cout << "4. Test 4" << endl;
 	cout << "5. Test 5" << endl;
-	cout << "6. Test 6" << endl;
-	cout << "7. Run Model" << endl;
-	cout << "8. Exit" << endl;
+	cout << "6. Run Model" << endl;
+	cout << "7. Exit" << endl;
 
 	cin >> mode;
 
@@ -53,58 +58,37 @@ while(mode!=8){
 	case 1:
 		// run test1
 		{
-		int a;
-		int deA;
-		int mstore;
-		int field;
-		repast::AgentId id(32, 12, 21);
-		Household h1(id,1,2,3);
+		cout << "Pick agent:" << endl;
+		cin >> pseudoID;
+		repast::AgentId id(pseudoID, 0, 0);
+		Household h1(id,0,0,0);
 		cout << h1.getId()  << endl;
 		cout << "Age:" << h1.getAge()  << endl;
 		cout << "Death Age:" << h1.getDeathAge()  << endl;
-		cout << "Maize Storage:"<< h1.getMaizeStorage()  << endl;
-		cout << "Assigned Field:"<<h1.getAssignedField() << endl;
-
-		cout << "Change the age:" << endl;
-		cin >> h1.age();
-
-		cout << "Change the death age:" << endl;
-		cin >> h1.deAge();
-
-		cout << "Change the Maize Storage amount:" << endl;
-		cin >> mstore;
-
-		cout << "Change the Assigned Field:" << endl;
-		cin >> field;
-
-		cout << h1.getId()  << endl;
-		cout << "Age:" << h1.getAge()  << endl;
-		cout << "Death Age:" << h1.getDeathAge()  << endl;
-		cout << "Maize Storage:"<< h1.getMaizeStorage()  << endl;
-		cout << "Assigned Field:"<<h1.getAssignedField() << endl;
-
+		cout << "Maize Storage:" << h1.getMaizeStorage()  << endl;
+		cout << "Assigned Field:" << h1.getAssignedField() << endl;
 		}
 		break;
 	case 2: // run test2
-		cout << "hello 2" << endl;
+		cout << "Hello2" << endl;
 		break;
 	case 3: // run test3
-		cout << "hello 3" << endl;
+		// compare the archaelogical data from water csv
 		break;
 	case 4: // run test4
-		cout << "hello 4" << endl;
+		cout << "Set maize yield index:" << endl;
+		cin >> maizeYI;
+		// some function to set into properties files.
 		break;
 	case 5: // run test5 not wokring
 		{
 		cout << "set new death age" << endl;
 		cin >> deathAgetest;
-		// repast::Properties::putProperty("max.age",deathAgetest); not working
+
 		}
 		break;
-	case 6: // run test6
-		model->OutputFile();
-		break;
-	case 7: // run the model
+
+	case 6: // run the model
 		{
 
 			repast::ScheduleRunner& runner = repast::RepastProcess::instance()->getScheduleRunner();
@@ -116,7 +100,7 @@ while(mode!=8){
 
 		}
 		break;
-	case 8: // exit
+	case 7: // exit
 			delete model;
 
 			repast::RepastProcess::instance()->done();
