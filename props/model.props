@@ -22,5 +22,5 @@ initial.max.corn=1600
 annual.variance=0.10
 spatial.variance=0.10
 fertility.prop=0.125
-harvest.adj=    1
+harvest.adj=    0
 new.household.ini.maize=0.33

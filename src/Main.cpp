@@ -14,9 +14,9 @@ int main(int argc, char** argv){
 	std::string propsFile  = argv[2]; // The name of the properties file is Arg 2
 
 	boost::mpi::environment env(argc, argv);
-	boost::mpi::communicator world;
+	boost::mpi::communicator* world;
 
-	repast::RepastProcess::init(configFile);
+
 	/*
 	repast::ScheduleRunner& runner = repast::RepastProcess::instance()->getScheduleRunner();
 
@@ -121,11 +121,14 @@ while(mode!=7){
 		// compare the archaelogical data from water csv
 
 		{
-			AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, &world);
+			repast::RepastProcess::init(configFile);
+			world = new boost::mpi::communicator;
+			AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, world);
 			model->initAgents();
 			model->test3();
+			delete model;
+			repast::RepastProcess::instance()->done();
 		}
-		cout << "hello 3" << endl;
 
 		break;
 	case 4: // run test4
@@ -182,20 +185,20 @@ while(mode!=7){
 	case 6: // run the model
 		{
 			RunModel:
-			AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, &world);
+			repast::RepastProcess::init(configFile);
+			world = new boost::mpi::communicator;
+			AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, world);
 			repast::ScheduleRunner& runner = repast::RepastProcess::instance()->getScheduleRunner();
 
 			model->initAgents();
 			model->initSchedule(runner);
 
 			runner.run();
-
+			delete model;
+			repast::RepastProcess::instance()->done();
 		}
 		break;
 	case 7: // exit
-			//delete model;
-
-			repast::RepastProcess::instance()->done();
 		cout << "End" << endl;
 		break;
 	}

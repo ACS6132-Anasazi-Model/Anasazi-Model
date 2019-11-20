@@ -75,7 +75,7 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	std::string String1 = "fissionGen";
 	fissionGen = new repast::DoubleUniformGenerator(repast::Random::instance()->createUniDoubleGenerator(0,1));
 	//repast::DoubleUniformGenerator fissionGen = fissionGenDup;
-	deathAgeGen = new repast::TriangleGenerator(repast::Random::instance()->createTriangleGenerator(0,param.maxAge,param.maxAge));
+	deathAgeGen = new repast::TriangleGenerator(repast::Random::instance()->createTriangleGenerator(0,param.maxAge+1,param.maxAge+1));
 	yieldGen = new repast::NormalGenerator(repast::Random::instance()->createNormalGenerator(0,param.annualVariance));
 	soilGen = new repast::NormalGenerator(repast::Random::instance()->createNormalGenerator(0,param.spatialVariance));
 	initAgeGen = new repast::IntUniformGenerator(repast::Random::instance()->createUniIntGenerator(0,29));
@@ -138,6 +138,7 @@ void AnasaziModel::initAgents()
 				locationSpace->getObjectsAt(repast::Point<int>(loc[0], loc[1]), locationList);
 				locationList[0]->setState(0);
 			}
+			cout << "\033[1;31mAgent " << household->getId().id() << " is already dead.\033[0m\n";
 			context.removeAgent(id);
 			//repast::RepastProcess::instance()->agentRemoved(id);
 		}
@@ -154,7 +155,7 @@ void AnasaziModel::doPerTick()
 	updateLocationProperties();
 	OutputFile();
 	#ifdef DEBUG
-		std::cout << "Year " << year << "\n";
+		std::cout << "\033[4;7m" << "Year " << year << "\033[0m\n";
 	#endif
 	year++;
 	updateHouseholdProperties();
@@ -555,7 +556,7 @@ void AnasaziModel::checkWaterConditions()
 
 void AnasaziModel::OutputFile()
 {
-	out << "\033[1;37;40m" << year << ", " <<  context.size() << "\033[0m" << std::endl;
+	out << year << ", " <<  context.size() << std::endl;
 }
 
 void  AnasaziModel::updateLocationProperties()
@@ -588,7 +589,9 @@ void AnasaziModel::updateHouseholdProperties()
 		if(household->death())
 		{
 			local_agents_iter++;
+			cout << "\033[1;31mAgent " << household->getId().id() << " has died peacefully.\033[0m\n";
 			removeHousehold(household);
+
 		}
 		else
 		{
@@ -663,8 +666,8 @@ bool AnasaziModel::fieldSearch(Household* household)
 		range++;
 		if(range > boardSizeY)
 		{
+			cout << "\033[1;31mAgent " << household->getId().id() << " left valley. No suitable field\033[0m\n";
 			removeHousehold(household);
-			cout << "\033[1;31mAgent left valley. No suitable field\033[0m\n";
 			return false;
 		}
 	}
@@ -775,7 +778,7 @@ bool AnasaziModel::relocateHousehold(Household* household)
 			std::vector<int> loc2;
 			locationSpace->getLocation(suitableLocations[0]->getId(),loc2);
 			householdSpace->moveTo(household->getId(),repast::Point<int>(loc2[0], loc2[1]));
-			cout << "\033[1;32m1 location available\nHouse moved to (" << loc2[0] << "," << loc2[1] << ")\033[0\n";
+			cout << "\033[1;32m1 location available\nHouse moved to (" << loc2[0] << "," << loc2[1] << ")\033[0m\n";
 			return true;
 		}
 		else
@@ -797,7 +800,7 @@ bool AnasaziModel::relocateHousehold(Household* household)
 			std::vector<int> loc2;
 			locationSpace->getLocation(suitableLocations[minElementIndex]->getId(),loc2);
 			householdSpace->moveTo(household->getId(),repast::Point<int>(loc2[0], loc2[1]));
-			cout << "\033[1;32mMultiple locations available\nHouse moved to (" << loc2[0] << "," << loc2[1] << ")\033[0\n";
+			cout << "\033[1;32mMultiple locations available\nHouse moved to (" << loc2[0] << "," << loc2[1] << ")\033[0m\n";
 			return true;
 		}
 	// get all water sources in the range
