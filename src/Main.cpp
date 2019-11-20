@@ -65,30 +65,16 @@ while(mode!=8){
 		cout << "Maize Storage:"<< h1.getMaizeStorage()  << endl;
 		cout << "Assigned Field:"<<h1.getAssignedField() << endl;
 
-		cout << "Change the age:" << endl;
-		cin >> h1.age();
-
-		cout << "Change the death age:" << endl;
-		cin >> h1.deAge();
-
-		cout << "Change the Maize Storage amount:" << endl;
-		cin >> mstore;
-
-		cout << "Change the Assigned Field:" << endl;
-		cin >> field;
-
-		cout << h1.getId()  << endl;
-		cout << "Age:" << h1.getAge()  << endl;
-		cout << "Death Age:" << h1.getDeathAge()  << endl;
-		cout << "Maize Storage:"<< h1.getMaizeStorage()  << endl;
-		cout << "Assigned Field:"<<h1.getAssignedField() << endl;
-
 		}
 		break;
 	case 2: // run test2
 		cout << "hello 2" << endl;
 		break;
 	case 3: // run test3
+		{
+			model->initAgents();
+			model->test3();
+		}
 		cout << "hello 3" << endl;
 		break;
 	case 4: // run test4

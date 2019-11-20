@@ -107,6 +107,7 @@ public:
   bool fieldSearch(Household* household);
   void removeHousehold(Household* household);
   bool relocateHousehold(Household* household);
+  void test3();
 };
 
 #endif
