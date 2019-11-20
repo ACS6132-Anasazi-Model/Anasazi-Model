@@ -33,7 +33,6 @@ private:
     int minFissionAge;
     int maxFissionAge;
     int maxAge;
-    int mostLikelyDeathAge;
     int maxDistance;
     int initMinCorn;
     int initMaxCorn;

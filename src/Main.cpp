@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Location.h"
 #include "Household.h"
+#include <iomanip>
 
 
 int main(int argc, char** argv){
@@ -16,8 +17,6 @@ int main(int argc, char** argv){
 	boost::mpi::communicator world;
 
 	repast::RepastProcess::init(configFile);
-
-	AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, &world);
 	/*
 	repast::ScheduleRunner& runner = repast::RepastProcess::instance()->getScheduleRunner();
 
@@ -33,8 +32,8 @@ int main(int argc, char** argv){
 
 
 	int mode; //	select whether to run test 1-6, run the model or exit
-	int deathAgetest; // set input age value
 	int maizeYI; // set maize yield index
+	int deathAgetest; // set input age value
 	int pseudoID=0;
 	int i=0;
 
@@ -129,21 +128,60 @@ while(mode!=7){
 		
 		break;
 	case 4: // run test4
-		cout << "Set maize yield index:" << endl;
-		cin >> maizeYI;
-		// some function to set into properties files.
+	{
+		double harvestAdjustment; // set input age value
+		cout << "set new yield adjustment" << endl;
+		cin >> harvestAdjustment;
+
+		fstream file;
+		file.open("props/model.props", ios::in | ios::out);
+		string temp;
+		int pos= file.tellg();
+		getline(file,temp);
+		while(temp.find("harvest.adj") == std::string::npos)
+		{
+			pos= file.tellg();
+			getline(file,temp);
+		}
+		file.seekp(pos);
+		file.seekg(pos);
+		file << "harvest.adj=" << std::setw(5) << harvestAdjustment;
+
+		file.close();
+		goto RunModel;
 		break;
+	}
 	case 5: // run test5 not wokring
 		{
+		int deathAgetest; // set input age value
 		cout << "set new death age" << endl;
 		cin >> deathAgetest;
 
+		fstream file;
+    file.open("props/model.props", ios::in | ios::out);
+		string temp;
+		int pos= file.tellg();
+		getline(file,temp);
+    while(temp.find("max.age") == std::string::npos)
+		{
+			pos= file.tellg();
+			getline(file,temp);
+    }
+		file.seekp(pos);
+		file.seekg(pos);
+		file << std::setw(5);
+		file << "max.age=" << std::setw(5) << deathAgetest;
+
+    file.close();
+		goto RunModel;
+		// repast::Properties::putProperty("max.age",deathAgetest); not working
 		}
 		break;
 
 	case 6: // run the model
 		{
-
+			RunModel:
+			AnasaziModel* model = new AnasaziModel(propsFile, argc, argv, &world);
 			repast::ScheduleRunner& runner = repast::RepastProcess::instance()->getScheduleRunner();
 
 			model->initAgents();
@@ -154,17 +192,11 @@ while(mode!=7){
 		}
 		break;
 	case 7: // exit
-			delete model;
+			//delete model;
 
 			repast::RepastProcess::instance()->done();
 		cout << "End" << endl;
 		break;
 	}
 }
-
-
-
-
-
-
 }
