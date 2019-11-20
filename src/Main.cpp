@@ -42,11 +42,11 @@ int main(int argc, char** argv){
 
 while(mode!=7){
 	cout << "Select an option:" << endl;
-	cout << "1. Test 1" << endl;
-	cout << "2. Test 2" << endl;
-	cout << "3. Test 3" << endl;
-	cout << "4. Test 4" << endl;
-	cout << "5. Test 5" << endl;
+	cout << "1. Test 1 - Instantiate an agent and update its properties" << endl;
+	cout << "2. Test 2 - Instantiate the network and update its properties" << endl;
+	cout << "3. Test 3 - Read archaeological data as input and propagate this to the network" << endl;
+	cout << "4. Test 4 - Reduce yields to below the minimum agent requirements and demonstrate the intended effect on population" << endl;
+	cout << "5. Test 5 - Read a new ‘death age’ parameter at run-time and demonstrate the intended effect on agent life expectancy" << endl;
 	cout << "6. Run Model" << endl;
 	cout << "7. Exit" << endl;
 

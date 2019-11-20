@@ -19,12 +19,6 @@
 #include "repast_hpc/Moore2DGridQuery.h"
 
 #include "Model.h"
-repast::DoubleUniformGenerator* fissionGen;
-extern repast::TriangleGenerator deathAgeGen;
-extern repast::NormalGenerator yieldGen;
-extern repast::NormalGenerator soilGen;
-extern repast::IntUniformGenerator initAgeGen;
-extern repast::IntUniformGenerator initMaizeGen;
 
 AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm) , locationcontext(comm)
 {
@@ -807,72 +801,130 @@ bool AnasaziModel::relocateHousehold(Household* household)
 	// find distance
 	// choose closest
 }
-void AnasaziModel::test2(boost::mpi::communicator* comm){
+void AnasaziModel::test2(boost::mpi::communicator* comm)
+{
+	Household* h1;
+	int pseudoID=0;
+	int boardSizeX;
+	int boardSizeY;
+	cout << "Select Board Size x:" << endl;
+	cin >> boardSizeX;
+	cout << "Select Board Size y:" << endl;
+	cin >> boardSizeY;
+	repast::Point<double> origin(0,0);
+	repast::Point<double> extent(boardSizeX, boardSizeY);
+	repast::GridDimensions gd (origin, extent);
 
-				Household* h1;
-				int pseudoID=0;
-				int boardSizeX;
-				int boardSizeY;
-				cout << "Select Board Size x:" << endl;
-				cin >> boardSizeX;
-				cout << "Select Board Size y:" << endl;
-				cin >> boardSizeY;
-				repast::Point<double> origin(0,0);
-				repast::Point<double> extent(boardSizeX, boardSizeY);
-				repast::GridDimensions gd (origin, extent);
+	std::vector<int> processDims;
+	processDims.push_back(1);
+	processDims.push_back(1);
+	householdSpace = new repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >("AgentDiscreteSpaceTest",gd,processDims,0, comm);
+	locationSpace = new repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >("LocationDiscreteSpaceTest",gd,processDims,0, comm);
 
+	context.addProjection(householdSpace);
+	locationcontext.addProjection(locationSpace);
 
-				std::vector<int> processDims;
-				processDims.push_back(1);
-				processDims.push_back(1);
-				householdSpace = new repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >("AgentDiscreteSpaceTest",gd,processDims,0, comm);
-				locationSpace = new repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >("LocationDiscreteSpaceTest",gd,processDims,0, comm);
-
-				context.addProjection(householdSpace);
-				locationcontext.addProjection(locationSpace);
-
-				int b, c, d, i=0,j=0;
-				int x, y, n=0;
-				double soil = 0;
-				int yield;
-				double harvestAdjustment;
-				double randomNum =0;
-
-				cout<<"Set number of agents:"<< endl;
-				cin >> n;
-				while(i<n){
-				cout << "Pick agent:" << endl;
-				cin >> pseudoID;
-				repast::AgentId id(pseudoID, 0, 0);
-				Household* h[i];
-				cout << "Enter Age:"<<endl;
-				cin >> b;
-				cout << "Enter Death Age:"<<endl;
-				cin >> c;
-				cout << "Enter Maize Storage:"<<endl;
-				cin >> d;
-				h[i] = new Household(id,b,c,d);
-				context.addAgent(h[i]);
-				cout << "Pick x coordinate to put agent:" << endl;
-				cin >> x;
-				cout << "Pick y coordinate to put agent:" << endl;
-				cin >> y;
-				householdSpace ->moveTo(id, repast::Point<int>(x,y));
-				i++;
-				}
-				while(j<n){
-				Location L[j](id, 0);
-				h[j] ->chooseField( &L[j] );
-				}
-				householdSpace -> getLocation(id,loc);
-				locationSpace -> getObjectsAt(repast::Point<int>(loc[0],loc[1]),locationList);
+	int b, c, d, i=0,j=0;
+	int x, y, n=0;
+	double soil = 0;
+	int yield;
+	double harvestAdjustment;
+	double randomNum =0;
 
 
+	cout<<"Set number of agents:"<< endl;
+	cin >> n;
+	Household* h[n];
+	Location* L[n];
+	while(i<n)
+	{
+		cout << "Pick agent:" << endl;
+		cin >> pseudoID;
+		repast::AgentId id(pseudoID, 0, 0);
+		cout << "Enter Age:"<<endl;
+		cin >> b;
+		cout << "Enter Death Age:"<<endl;
+		cin >> c;
+		cout << "Enter Maize Storage:"<<endl;
+		cin >> d;
+		h[i] = new Household(id,b,c,d);
+		context.addAgent(h[i]);
+		cout << "Pick x coordinate to put agent:" << endl;
+		cin >> x;
+		cout << "Pick y coordinate to put agent:" << endl;
+		cin >> y;
+		householdSpace ->moveTo(id, repast::Point<int>(x,y));
+		i++;
+	}
+	while(j<n)
+	{
+		cout << "Define Field ID:" << endl;
+		cin >> pseudoID;
+		repast::AgentId id(pseudoID, 0, 1);
 
+		L[j] = new Location(id, 0);
+		h[j] ->chooseField( L[j] );
+		locationcontext.addAgent(L[j]);
+		cout << "Pick x coordinate to put field:" << endl;
+		cin >> x;
+		cout << "Pick y coordinate to put field:" << endl;
+		cin >> y;
+		locationSpace ->moveTo(id, repast::Point<int>(x,y));
+		j++;
+	}
 
+	repast::SharedContext<Household>::const_iterator local_agents_iter = context.begin();
+	repast::SharedContext<Household>::const_iterator local_agents_end = context.end();
+	std::vector<int> loc;
 
-
-
+	while(local_agents_iter != local_agents_end)
+	{
+		Household* household = (&**local_agents_iter);
+		householdSpace -> getLocation(household->getId(),loc);
+		cout << "Agent " << household->getId().id() << " is located in cell (" << loc[0] << "," << loc[1] << ")\n";
+		locationSpace -> getLocation(household->getAssignedField()->getId(),loc);
+		cout << "Agent's Field " << household->getAssignedField()->getId().id() << " is located in cell (" << loc[0] << "," << loc[1] << ")\n";
+		local_agents_iter++;
+	}
+	cout << "Pick x coordinate of cell to check:" << endl;
+	cin >> x;
+	cout << "Pick y coordinate of cell to check:" << endl;
+	cin >> y;
+	std::vector<Household*> hList;
+	std::vector<Location*> lList;
+	locationSpace -> getObjectsAt(repast::Point<int>(x,y),lList);
+	householdSpace -> getObjectsAt(repast::Point<int>(x,y),hList);
+	if(lList.size() == 0 && hList.size() == 0)
+	{
+		cout << "No agents or fields in that cell\n";
+	}
+	else if(hList.size() == 0)
+	{
+		cout << "No agents in that cell\n";
+		for(int x=0; x<lList.size();x++)
+		{
+			cout << "Field " << lList[x]->getId().id() << " is in that cell\n";
+		}
+	}
+	else if(lList.size() == 0)
+	{
+		cout << "No fields in that cell\n";
+		for(int x=0; x<hList.size();x++)
+		{
+			cout << "Field " << hList[x]->getId().id() << " is in that cell\n";
+		}
+	}
+	else
+	{
+		for(int x; x<lList.size();x++)
+		{
+			cout << "Field " << lList[x]->getId().id() << " is in that cell\n";
+		}
+		for(int x; x<hList.size();x++)
+		{
+			cout << "Field " << hList[x]->getId().id() << " is in that cell\n";
+		}
+	}
 }
 
 void AnasaziModel::test3(){
