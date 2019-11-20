@@ -807,3 +807,28 @@ bool AnasaziModel::relocateHousehold(Household* household)
 	// find distance
 	// choose closest
 }
+
+void AnasaziModel::test3(){
+	int x,y,i;
+	cout << "Enter the Location coordinate x:" << endl;
+	cin >> x;
+	cout << "Enter the Location coordinate y:" << endl;
+	cin >> y;
+	cout << "Enter the year:" << endl;
+	cin >> i;
+	std::vector<Location*> locationList;
+	locationSpace->getObjectsAt(repast::Point<int>(x, y), locationList);
+	locationList[0]-> printproperties();
+	cout << "pdsiGeneral:" << pdsi[i].pdsiGeneral << endl;
+	cout << "pdsiNorth:" << pdsi[i].pdsiNorth << endl;
+	cout << "pdsiMid:" << pdsi[i].pdsiMid << endl;
+	cout << "pdsiNatural:" << pdsi[i].pdsiNatural << endl;
+	cout << "pdsiUpland:" << pdsi[i].pdsiUpland << endl;
+	cout << "pdsiKinbiko:" << pdsi[i].pdsiKinbiko << endl;	
+	cout << "hydroGeneral:" << hydro[i].hydroGeneral << endl;
+	cout << "hydroNorth:" << hydro[i].hydroNorth << endl;
+	cout << "hydroMid:" << hydro[i].hydroMid << endl;
+	cout << "hydroNatural:" << hydro[i].hydroNatural << endl;
+	cout << "hydroUpland:" << hydro[i].hydroUpland << endl;
+	cout << "hydroKinbiko:" << hydro[i].hydroKinbiko << endl;
+}

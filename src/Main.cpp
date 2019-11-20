@@ -116,10 +116,17 @@ while(mode!=7){
 		}
 		break;
 	case 2: // run test2
-		cout << "Good Morning" << endl;
+		cout << "Goof" << endl;
 		break;
 	case 3: // run test3
 		// compare the archaelogical data from water csv
+
+		{
+			model->initAgents();
+			model->test3();
+		}
+		cout << "hello 3" << endl;
+		
 		break;
 	case 4: // run test4
 		cout << "Set maize yield index:" << endl;
