@@ -13,7 +13,8 @@ def readData():
     
     for row in csv_read:
         data.append(row)
-        
+    
+    return data
     #print(data[0][0])
 
 
@@ -28,6 +29,7 @@ def readOutput():
     for row in csv_read:
         output.append(row)
 
+    return output
     #print(output[0][0])
 
 
