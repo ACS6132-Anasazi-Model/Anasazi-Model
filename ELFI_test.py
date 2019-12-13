@@ -8,7 +8,8 @@ import os
 from datetime import datetime
 import csv
 import shutil
-import subprocess
+from subprocess import *
+import multiprocessing
 
 currentDT = datetime.now()
 currentDT = currentDT.strftime("/%Y-%m-%d %H:%M:%S")
@@ -17,7 +18,7 @@ os.mkdir("results")
 shutil.rmtree("prop")
 os.mkdir("prop")
 # elfi.set_client('multiprocessing')
-iter = 1
+iter = multiprocessing.Value('i', 1)
 global start
 start = 800
 global end
@@ -51,15 +52,15 @@ def readOutput(iteration):
     csv_read = csv.reader(file, delimiter=',')
 
     file.readline()
-    try:
-        for row in csv_read:
-            output.append(int(row[1]))
-        file.close()
-    except:
-        file.close()
-        with open("results/result%s.csv" %(iteration), 'rb') as mycsv:
-            reader = csv.reader( (line.replace('\0','') for line in mycsv) )
-        readOutput(iteration)
+    # try:
+    for row in csv_read:
+        output.append(int(row[1]))
+    file.close()
+    # except:
+    #     file.close()
+    #     with open("results/result%s.csv" %(iteration), 'rb') as mycsv:
+    #         reader = csv.reader( (line.replace('\0','') for line in mycsv) )
+    #     readOutput(iteration)
 
     if(len(output) != end-start+1):
         print(iteration)
@@ -102,8 +103,9 @@ def writeParameterFile(iteration,start,end,storeyear,storage,need,minfission,max
 
 def anasazi_model(minDeathAge, maxDeathAge,fertility,harvest,minfission,maxfission,n_obs=551, batch_size=1, random_state=None):
     global iter
-    iter += 1
-    iteration = iter -1
+    with iter.get_lock():
+        iteration = iter.value
+        iter.value += 1
 
     global start
     global end
@@ -125,13 +127,13 @@ def anasazi_model(minDeathAge, maxDeathAge,fertility,harvest,minfission,maxfissi
     random_state = random_state or np.random
 
     w = random_state.randn(batch_size, n_obs+2)  # i.i.d. sequence ~ N(0,1)
-    Simulation = subprocess.Popen(["mpirun", "bin/main.exe", "props/config.props", "prop/model%s.props"%(iteration), "results/result%s.csv" %(iteration)])
-    Simulation.wait()
+    Simulation = check_output("mpirun bin/main.exe props/config.props prop/model%s.props results/result%s.csv" %(iteration,iteration),shell=True)
+    #Simulation.wait()
     output = readOutput(iteration)
     #print(output)
-    if(smc.current_population_threshold != threshold):
-        threshold = smc.current_population_threshold
-        print("Population wth threshold {:d}".format(threshold))
+    # if(smc.current_population_threshold != threshold):
+    #     threshold = smc.current_population_threshold
+    #     print("Population wth threshold {:d}\n".format(threshold))
 
     return output
 
@@ -155,10 +157,10 @@ S1 = elfi.Summary(autocov, Y,hist_data)
 d = elfi.Distance('euclidean', S1)
 elfi.draw(d)
 
-elfi.set_client('native')
+elfi.set_client('multiprocessing')
 # rej = elfi.Rejection(d,batch_size=1)
-smc = elfi.SMC(d,batch_size=1)
 global smc
+smc = elfi.SMC(d,batch_size=1)
 
 N = 50
 
@@ -166,7 +168,7 @@ N = 50
 
 # You can give the sample method a `vis` keyword to see an animation how the prior transforms towards the
 # posterior with a decreasing threshold.
-schedule = [100,25,10]
+schedule = [100,25,5]
 result_smc = smc.sample(N, schedule)
 
 # result.summary()
