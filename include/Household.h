@@ -6,7 +6,7 @@
 #include "repast_hpc/SharedDiscreteSpace.h"
 #include "repast_hpc/Random.h"
 #include "Location.h"
-#define DEBUG
+//#define DEBUG
 
 class Household{
 private:
@@ -27,10 +27,10 @@ public:
 
 	/* Getters specific to this kind of Agent */
 	int splitMaizeStored(int percentage);
-  bool checkMaize();
+  bool checkMaize(int needs);
   bool death();
-  bool fission(int minFissionAge, int maxFissionAge, double gen);
-	void nextYear();
+  bool fission(int minFissionAge, int maxFissionAge, double gen, double fProb);
+	void nextYear(int needs);
 	void chooseField(Location* Field);
 
 	/* Getters for test1 */

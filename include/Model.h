@@ -32,7 +32,8 @@ private:
     int householdNeed;
     int minFissionAge;
     int maxFissionAge;
-    int maxAge;
+    int minDeathAge;
+    int maxDeathAge;
     int maxDistance;
     int initMinCorn;
     int initMaxCorn;
@@ -79,7 +80,7 @@ private:
 	repast::SharedDiscreteSpace<Household, repast::StrictBorders, repast::SimpleAdder<Household> >* householdSpace;
   repast::SharedDiscreteSpace<Location, repast::StrictBorders, repast::SimpleAdder<Location> >* locationSpace;
   repast::DoubleUniformGenerator* fissionGen;// = repast::Random::instance()->createUniDoubleGenerator(0,1);
-  repast::TriangleGenerator* deathAgeGen;// = repast::Random::instance()->createNormalGenerator(25,5);
+  repast::IntUniformGenerator* deathAgeGen;// = repast::Random::instance()->createNormalGenerator(25,5);
   repast::NormalGenerator* yieldGen;// = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
   repast::NormalGenerator* soilGen;// = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
   repast::IntUniformGenerator* initAgeGen;// = repast::Random::instance()->createUniIntGenerator(0,29);
@@ -87,7 +88,8 @@ private:
 
 
 public:
-	AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm);
+	//AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm);
+  AnasaziModel(std::string propsFile,std::string resultFile, int argc, char** argv, boost::mpi::communicator* comm);
 	~AnasaziModel();
 	void initAgents();
 	void initSchedule(repast::ScheduleRunner& runner);

@@ -30,9 +30,9 @@ int Household::splitMaizeStored(int percentage)
   return maizeEndowment;
 }
 
-bool Household::checkMaize()
+bool Household::checkMaize(int needs)
 {
-  if((assignedField->getExpectedYield() + maizeStorage) > 800)
+  if((assignedField->getExpectedYield() + maizeStorage) > needs)
   {
     return true;
   }
@@ -58,9 +58,9 @@ bool Household::death()
   }
 }
 
-bool Household::fission(int minFissionAge, int maxFissionAge, double gen)
+bool Household::fission(int minFissionAge, int maxFissionAge, double gen, double fProb)
 {
-  if(age>=minFissionAge && age<=maxFissionAge && gen >= 0.875)
+  if((age>=minFissionAge && age<=maxFissionAge) && (gen <= fProb))
   {
       return true;
   }
@@ -70,10 +70,10 @@ bool Household::fission(int minFissionAge, int maxFissionAge, double gen)
   }
 }
 
-void Household::nextYear()
+void Household::nextYear(int needs)
 {
   age++;
-  maizeStorage = assignedField->getExpectedYield() + maizeStorage - 800;
+  maizeStorage = assignedField->getExpectedYield() + maizeStorage - needs;
 }
 
 void Household::chooseField(Location* Field)

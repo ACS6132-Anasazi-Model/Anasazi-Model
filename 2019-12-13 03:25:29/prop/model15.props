@@ -1,0 +1,27 @@
+#Properties file
+
+
+count.of.agents = 14
+board.size.x = 80
+board.size.y = 120
+proc.per.x = 1
+proc.per.y = 1
+grid.buffer = 0
+
+start.year = 800
+end.year = 805
+max.store.year = 2
+max.storage = 1600
+household.need = 800
+min.fission.age = 16
+max.fission.age = 24
+min.death.age = 29
+max.death.age = 35
+max.distance = 1000
+initial.min.corn = 1000
+initial.max.corn = 1600
+annual.variance = 0.1
+spatial.variance = 0.1
+fertility.prop = 0.13637394804671807
+harvest.adj = 0.8649405371991244
+new.household.ini.maize = 0.33
