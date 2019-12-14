@@ -20,6 +20,33 @@
 
 #include "Model.h"
 
+// substracts b<T> to a<T>
+template <typename T>
+void substract_vector(std::vector<T>& a, const std::vector<T>& b)
+{
+    typename std::vector<T>::iterator       it = a.begin();
+    typename std::vector<T>::const_iterator it2 = b.begin();
+
+    while (it != a.end())
+    {
+        while (it2 != b.end() && it != a.end())
+        {
+            if (*it == *it2)
+            {
+                it = a.erase(it);
+                it2 = b.begin();
+            }
+
+            else
+                ++it2;
+        }
+        if (it != a.end())
+            ++it;
+
+        it2 = b.begin();
+    }
+}
+
 AnasaziModel::AnasaziModel(std::string propsFile,std::string resultFile, int argc, char** argv, boost::mpi::communicator* comm): context(comm) , locationcontext(comm)
 {
 	props = new repast::Properties(propsFile, argc, argv, comm);
@@ -683,12 +710,17 @@ bool AnasaziModel::fieldSearch(Household* household)
 	repast::Point<int> center(loc);
 
 	std::vector<Location*> neighbouringLocations;
-	//std::vector<Location*> checkedLocations;
+	std::vector<Location*> checkedLocations;
 	repast::Moore2DGridQuery<Location> moore2DQuery(locationSpace);
 	int range = 1;
 	while(1)
 	{
 		moore2DQuery.query(loc, range, false, neighbouringLocations);
+		moore2DQuery.query(loc, range-1, false, checkedLocations);
+		substract_vector(neighbouringLocations,checkedLocations);
+		#ifdef DEBUG
+		cout << "No of neightbours = " << neighbouringLocations.size() << endl;
+		#endif
 		// for(std::vector<Location>::iterator it = checkedLocations.begin() ; it != checkedLocations.end(); ++it)
 		// {
 		// 	neighbouringLocations.erase(std::remove(neighbouringLocations.begin(), neighbouringLocations.end(),(&*it)),neighbouringLocations.end());
@@ -774,7 +806,7 @@ bool AnasaziModel::relocateHousehold(Household* household)
 	std::vector<Location*> neighbouringLocations;
 	std::vector<Location*> suitableLocations;
 	std::vector<Location*> waterSources;
-	//std::vector<Location*> checkedLocations;
+	std::vector<Location*> checkedLocations;
 
 	std::vector<int> loc, loc2;
 	locationSpace->getLocation(household->getAssignedField()->getId(), loc);
@@ -792,6 +824,11 @@ bool AnasaziModel::relocateHousehold(Household* household)
 	//get all !Field with 1km
 	LocationSearch:
 		moore2DQuery.query(loc, range*i, false, neighbouringLocations);
+		moore2DQuery.query(loc, range*(i-1), false, checkedLocations);
+		substract_vector(neighbouringLocations,checkedLocations);
+		#ifdef DEBUG
+		cout << "No of neightbours = " << neighbouringLocations.size() << endl;
+		#endif
 		for (std::vector<Location*>::iterator it = neighbouringLocations.begin() ; it != neighbouringLocations.end(); ++it)
 		{
 			Location* tempLoc = (&**it);
