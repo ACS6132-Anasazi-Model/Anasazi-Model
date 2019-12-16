@@ -159,7 +159,7 @@ elfi.draw(d)
 
 elfi.set_client('multiprocessing')
 # rej = elfi.Rejection(d,batch_size=1)
-global smc
+
 smc = elfi.SMC(d,batch_size=1)
 
 N = 50
