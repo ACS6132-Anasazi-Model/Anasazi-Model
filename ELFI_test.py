@@ -82,7 +82,7 @@ def writeParameterFile(iteration,start,end,storeyear,storage,need,minfission,max
     file.write("end.year = {:d}\n".format(end))
     file.write("max.store.year = {:d}\n".format(storeyear))
     file.write("max.storage = {:d}\n".format(storage))
-    file.write("household.need = {:d}\n".format(need))
+    file.write("household.need = {:d}\n".format(int(need[0])))
     file.write("min.fission.age = {:d}\n".format(int(minfission[0])))
     file.write("max.fission.age = {:d}\n".format(int(maxfission[0])))
     file.write("min.death.age = {:d}\n".format(int(minDeathAge[0])))
@@ -101,7 +101,7 @@ def writeParameterFile(iteration,start,end,storeyear,storage,need,minfission,max
 #writeParameterFile(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
 #readOutput()
 
-def anasazi_model(minDeathAge, maxDeathAge,fertility,harvest,minfission,maxfission,n_obs=551, batch_size=1, random_state=None):
+def anasazi_model(minDeathAge, maxDeathAge,fertility,harvest,minfission,maxfission,need,n_obs=551, batch_size=1, random_state=None):
     global iter
     with iter.get_lock():
         iteration = iter.value
@@ -112,7 +112,7 @@ def anasazi_model(minDeathAge, maxDeathAge,fertility,harvest,minfission,maxfissi
     global threshold
     storeyear = 2
     storage = 1600
-    need = 800
+    #need = 800
     #minfission = 16
     #maxfission = 25
     distance = 1000
@@ -149,9 +149,10 @@ fertility = elfi.Prior('normal',0.125,0.03)
 harvest = elfi.Prior('uniform',0.8,0.2)
 minfission = elfi.Prior('uniform',15,6)
 maxfission = elfi.Prior('uniform',22,8)
+need = elfi.Prior('uniform',600,400)
 
 hist_data = readData()
-Y = elfi.Simulator(anasazi_model, minDeathAge, maxDeathAge,fertility,harvest,minfission,maxfission, observed=hist_data)
+Y = elfi.Simulator(anasazi_model, minDeathAge, maxDeathAge,fertility,harvest,minfission,maxfission, need,observed=hist_data)
 
 S1 = elfi.Summary(autocov, Y,hist_data)
 d = elfi.Distance('euclidean', S1)
