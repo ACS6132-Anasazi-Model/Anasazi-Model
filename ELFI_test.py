@@ -22,7 +22,7 @@ iter = multiprocessing.Value('i', 1)
 global start
 start = 800
 global end
-end = 850
+end = 1250
 
 global threshold
 threshold = 0
@@ -149,7 +149,7 @@ fertility = elfi.Prior('normal',0.125,0.03)
 harvest = elfi.Prior('uniform',0.8,0.2)
 minfission = elfi.Prior('uniform',15,6)
 maxfission = elfi.Prior('uniform',22,8)
-need = elfi.Prior('uniform',600,400)
+need = elfi.Prior('normal',800,50)
 
 hist_data = readData()
 Y = elfi.Simulator(anasazi_model, minDeathAge, maxDeathAge,fertility,harvest,minfission,maxfission, need,observed=hist_data)
@@ -159,33 +159,36 @@ d = elfi.Distance('euclidean', S1)
 elfi.draw(d)
 
 elfi.set_client('multiprocessing')
-# rej = elfi.Rejection(d,batch_size=1)
+rej = elfi.Rejection(d,batch_size=1)
 
-smc = elfi.SMC(d,batch_size=1)
+# smc = elfi.SMC(d,batch_size=1)
 
-N = 50
+N = 25
 
+result = rej.sample(N, quantile=0.1)
 # vis = dict(xlim=[-2,2], ylim=[-1,1])
 
 # You can give the sample method a `vis` keyword to see an animation how the prior transforms towards the
 # posterior with a decreasing threshold.
-schedule = [100,25,5]
-result_smc = smc.sample(N, schedule)
+# schedule = [100,25,5]
+# result_smc = smc.sample(N, schedule)
 
-# result.summary()
-# result.plot_pairs();
-# plt.show()
-# # result.plot_marginals()
-# plt.savefig('posterior.png')
-result_smc.sample_means_summary(all=True)
-result_smc.plot_pairs(all=True, figsize=(8, 2), fontsize=12)
-result_smc.save("results/result_smc.json")
-plt.savefig('results/population2.png')
+result.summary()
+result.plot_pairs();
+result.plot_marginals()
+plt.savefig('pairs.png')
 plt.close()
-plt.savefig('results/population1.png')
+plt.savefig('posteriors.png')
 plt.close()
-plt.savefig('results/population0.png')
-plt.close()
+# result_smc.sample_means_summary(all=True)
+# result_smc.plot_pairs(all=True, figsize=(8, 2), fontsize=12)
+# result_smc.save("results/result_smc.json")
+# plt.savefig('results/population2.png')
+# plt.close()
+# plt.savefig('results/population1.png')
+# plt.close()
+# plt.savefig('results/population0.png')
+# plt.close()
 
 path = os.getcwd() + currentDT
 shutil.copytree("results", path + "/results")

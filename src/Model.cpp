@@ -716,8 +716,8 @@ bool AnasaziModel::fieldSearch(Household* household)
 	while(1)
 	{
 		moore2DQuery.query(loc, range, false, neighbouringLocations);
-		moore2DQuery.query(loc, range-1, false, checkedLocations);
-		substract_vector(neighbouringLocations,checkedLocations);
+		// moore2DQuery.query(loc, range-1, false, checkedLocations);
+		// substract_vector(neighbouringLocations,checkedLocations);
 		#ifdef DEBUG
 		cout << "No of neightbours = " << neighbouringLocations.size() << endl;
 		#endif
@@ -824,8 +824,8 @@ bool AnasaziModel::relocateHousehold(Household* household)
 	//get all !Field with 1km
 	LocationSearch:
 		moore2DQuery.query(loc, range*i, false, neighbouringLocations);
-		moore2DQuery.query(loc, range*(i-1), false, checkedLocations);
-		substract_vector(neighbouringLocations,checkedLocations);
+		// moore2DQuery.query(loc, range*(i-1), false, checkedLocations);
+		// substract_vector(neighbouringLocations,checkedLocations);
 		#ifdef DEBUG
 		cout << "No of neightbours = " << neighbouringLocations.size() << endl;
 		#endif
