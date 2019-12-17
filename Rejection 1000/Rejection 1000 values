@@ -1,0 +1,5 @@
+Method: Rejection
+Number of samples: 50
+Number of simulations: 1000
+Threshold: 66.3
+Sample means: fertility: 0.136, harvest: 0.931, maxDeathAge: 36.1, maxfission: 26.5, minDeathAge: 27.7, minfission: 17.7, need: 767
