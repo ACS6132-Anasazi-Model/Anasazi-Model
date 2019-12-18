@@ -18,9 +18,12 @@ end = 1250
 
 def autocov(x,hist_data):
     x = np.array(x)
-    C = np.sqrt(np.mean((x-hist_data)**2))
-    #print(C)
-    return C
+    if(len(x) == len(hist_data)):
+        C = np.sqrt(np.mean((x-hist_data)**2))
+        #print(C)
+        return C
+    else:
+        return 999999
 
 def readOutput(S,hist_data):
     x = []

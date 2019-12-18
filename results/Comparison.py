@@ -14,13 +14,16 @@ import multiprocessing
 global start
 start = 800
 global end
-end = 1250
+end = 850
 
 def autocov(x,hist_data):
     x = np.array(x)
-    C = np.sqrt(np.mean((x-hist_data)**2))
-    #print(C)
-    return C
+    if(len(x) == len(hist_data)):
+        C = np.sqrt(np.mean((x-hist_data)**2))
+        #print(C)
+        return C
+    else:
+        return 999999
 
 def readOutput(S,hist_data):
     x = []
@@ -33,7 +36,7 @@ def readOutput(S,hist_data):
             if (line_num != 1):
                 x.append(int(row[0]))
                 y.append(int(row[1]))
-    if (autocov(y,hist_data) < 30):
+    if (autocov(y,hist_data) < 5):
         print(autocov(y,hist_data))
         plt.plot(x,y, label=S)
 
@@ -48,7 +51,7 @@ def readData():
         data1.append(int(row[1]))
 
     file.close()
-    plt.plot(data2,data1, label='Historical')
+    plt.plot(data2[0:end-start+1],data1[0:end-start+1], label='Historical')
     #print(data[0:6])
     return data1[0:end-start+1]
     #print(data[0][0])

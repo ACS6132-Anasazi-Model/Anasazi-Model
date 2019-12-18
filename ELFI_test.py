@@ -17,12 +17,13 @@ shutil.rmtree("results")
 os.mkdir("results")
 shutil.rmtree("prop")
 os.mkdir("prop")
-# elfi.set_client('multiprocessing')
+
+elfi.set_client('multiprocessing')
 iter = multiprocessing.Value('i', 1)
 global start
 start = 800
 global end
-end = 1250
+end = 850
 
 global threshold
 threshold = 0
@@ -158,42 +159,40 @@ S1 = elfi.Summary(autocov, Y,hist_data)
 d = elfi.Distance('euclidean', S1)
 elfi.draw(d)
 
-elfi.set_client(elfi.clients.multiprocessing.Client(num_processes=12))
-# rej = elfi.Rejection(d,batch_size=1)
 
-# smc = elfi.SMC(d,batch_size=1)
+elfi.set_client(elfi.clients.multiprocessing.Client(num_processes=3))
+#rej = elfi.Rejection(d,batch_size=1)
 
-N = 25
+smc = elfi.SMC(d,batch_size=1)
 
-result = rej.sample(N, quantile=0.1)
+N = 10
+
+#result = rej.sample(N, quantile=0.1)
 # vis = dict(xlim=[-2,2], ylim=[-1,1])
 
 # You can give the sample method a `vis` keyword to see an animation how the prior transforms towards the
 # posterior with a decreasing threshold.
-# schedule = [100,25,5]
-# result_smc = smc.sample(N, schedule)
+schedule = [50,25,10]
+result_smc = smc.sample(N, schedule)
 
-result.summary()
-result.plot_pairs();
-result.plot_marginals()
-plt.savefig('pairs.png')
-plt.close()
-plt.savefig('posteriors.png')
-plt.close()
-# result_smc.sample_means_summary(all=True)
-# result_smc.plot_pairs(all=True, figsize=(8, 2), fontsize=12)
-# result_smc.save("results/result_smc.json")
+# result.summary()
+# result.plot_pairs();
+# result.plot_marginals()
+# plt.savefig('pairs.png')
+# plt.close()
+# plt.savefig('posteriors.png')
+# plt.close()
+result_smc.sample_means_summary(all=True)
+result_smc.plot_pairs(all=True, figsize=(8, 2), fontsize=12)
+result_smc.save("results/result_smc.json")
 # plt.savefig('results/population2.png')
 # plt.close()
-# plt.savefig('results/population1.png')
-# plt.close()
-# plt.savefig('results/population0.png')
-# plt.close()
+plt.show()
 
-path = os.getcwd() + currentDT
-shutil.copytree("results", path + "/results")
-shutil.rmtree("results")
-os.mkdir("results")
-shutil.copytree("prop", path + "/prop")
-shutil.rmtree("prop")
-os.mkdir("prop")
+# path = os.getcwd() + currentDT
+# shutil.copytree("results", path + "/results")
+# shutil.rmtree("results")
+# os.mkdir("results")
+# shutil.copytree("prop", path + "/prop")
+# shutil.rmtree("prop")
+# os.mkdir("prop")
