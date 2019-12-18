@@ -6,7 +6,7 @@
 #include "repast_hpc/SharedDiscreteSpace.h"
 #include "repast_hpc/Random.h"
 #include "Location.h"
-#define DEBUG
+//#define DEBUG
 
 class Household{
 private:

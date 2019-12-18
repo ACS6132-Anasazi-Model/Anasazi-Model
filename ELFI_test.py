@@ -158,8 +158,8 @@ S1 = elfi.Summary(autocov, Y,hist_data)
 d = elfi.Distance('euclidean', S1)
 elfi.draw(d)
 
-elfi.set_client('multiprocessing')
-rej = elfi.Rejection(d,batch_size=1)
+elfi.set_client(elfi.clients.multiprocessing.Client(num_processes=12))
+# rej = elfi.Rejection(d,batch_size=1)
 
 # smc = elfi.SMC(d,batch_size=1)
 
